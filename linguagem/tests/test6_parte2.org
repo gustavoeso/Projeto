@@ -1,0 +1,3 @@
+Load tasks from "tasks_test.json";
+Mark task2 as done;
+Review all tasks;

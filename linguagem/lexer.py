@@ -31,7 +31,6 @@ TOKENS = [
     ("SAVE_TASKS", r"Save tasks to"),
     ("LOAD_TASKS", r"Load tasks from"),
 
-
     # Outras definições
     ("DEFINE_TASK", r"Define a task"),
     ("SET_DEADLINE", r"Set deadline for"),

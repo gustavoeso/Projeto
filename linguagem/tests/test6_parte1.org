@@ -1,0 +1,12 @@
+Define a task task1 as "Write report";
+Set deadline for task1 as "2024-11-30";
+Set priority for task1 as "High";
+Set category for task1 as "Work";
+Mark task1 as done;
+
+Define a task task2 as "Prepare slides";
+Set priority for task2 as "Medium";
+Mark task2 as not done;
+
+Save tasks to "tasks_test.json";
+Review all tasks;

@@ -102,9 +102,12 @@ class Interpreter:
         # Salvar tarefas
         elif node.type == "SAVE_TASKS":
             filename = node.value.strip('"')  # Remove aspas
-            with open(filename, "w") as file:
-                json.dump(self.tasks, file, indent=4)
-            print(f"Tasks saved to {filename}.")
+            try:
+                with open(filename, "w") as file:
+                    json.dump(self.tasks, file, indent=4)
+                print(f"Tasks saved to {filename}.")
+            except IOError:
+                print(f"Error: Could not write to file '{filename}'.")
 
         # Carregar tarefas
         elif node.type == "LOAD_TASKS":
@@ -112,7 +115,7 @@ class Interpreter:
             try:
                 with open(filename, "r") as file:
                     self.tasks = json.load(file)
-                print(f"Tasks loaded from {filename}.")
+                print(f"Tasks loaded from {filename}, overwriting the current state.")
             except FileNotFoundError:
                 print(f"Error: File '{filename}' not found.")
 

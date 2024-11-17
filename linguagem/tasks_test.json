@@ -1,0 +1,14 @@
+{
+    "task1": {
+        "name": "Write report",
+        "deadline": "2024-11-30",
+        "priority": "High",
+        "category": "Work",
+        "status": "done"
+    },
+    "task2": {
+        "name": "Prepare slides",
+        "priority": "Medium",
+        "status": "not done"
+    }
+}
