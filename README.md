@@ -24,10 +24,12 @@ test5 tem um overview por cima de coisas que podem ser feitas na nossa linguagem
    - [Definir Prazos](#definir-prazos)
    - [Atributos Customizados](#atributos-customizados)
    - [Status de Conclusão](#status-de-conclusão)
+   - [Salvar e Carregar Tarefas](#salvar-e-carregar-tarefas)
    - [Revisar Tarefas](#revisar-tarefas)
    - [Exibir Informações](#exibir-informações)
-4. [Formato de Data](#formato-de-data)
-5. [Exemplo Completo](#exemplo-completo)
+4. [Comentários](#comentários)
+5. [Formato de Data](#formato-de-data)
+6. [Exemplo Completo](#exemplo-completo)
 
 ---
 
@@ -35,7 +37,8 @@ test5 tem um overview por cima de coisas que podem ser feitas na nossa linguagem
 - Foco em produtividade e organização.
 - Estruturas básicas de programação: variáveis, loops e condicionais.
 - Comandos intuitivos como `Define a task`, `Set deadline`, e `Review all tasks`.
-- Suporte para atributos customizados e exibição de informações.
+- Suporte para salvar e carregar tarefas em arquivos JSON.
+- Suporte para comentários no código.
 
 ---
 
@@ -62,7 +65,7 @@ test5 tem um overview por cima de coisas que podem ser feitas na nossa linguagem
 ---
 
 #### **Loops**
-- **`Repeat until complete`:** Executa blocos repetidamente até ser interrompido.
+- **`Repeat until complete`:** Executa blocos repetidamente até ser interrompido (limitado a 10 iterações para segurança).
 - **`Do it again X times`:** Executa o bloco um número fixo de vezes.
 - **Sintaxe:**
   ```plaintext
@@ -117,6 +120,21 @@ test5 tem um overview por cima de coisas que podem ser feitas na nossa linguagem
 
 ---
 
+#### **Salvar e Carregar Tarefas**
+- **Salvar tarefas:** Salva todas as tarefas em um arquivo JSON.
+  - **Sintaxe:**
+    ```plaintext
+    Save tasks to "tasks.json";
+    ```
+
+- **Carregar tarefas:** Substitui o estado atual das tarefas pelo conteúdo do arquivo JSON.
+  - **Sintaxe:**
+    ```plaintext
+    Load tasks from "tasks.json";
+    ```
+
+---
+
 #### **Revisar Tarefas**
 - Lista todas as tarefas, seus prazos e atributos.
 - **Sintaxe:**
@@ -132,6 +150,17 @@ test5 tem um overview por cima de coisas que podem ser feitas na nossa linguagem
   ```plaintext
   Show me "Welcome to ProductivityLang!";
   Show me task1;
+  ```
+
+---
+
+### **Comentários**
+- Use `#` para adicionar comentários de linha única.
+- Tudo após o `#` em uma linha será ignorado.
+- **Exemplo:**
+  ```plaintext
+  # Este é um comentário
+  Define a task task1 as "Complete project";  # Comentário após o comando
   ```
 
 ---
@@ -155,6 +184,9 @@ Define a task task2 as "Prepare slides";
 Set priority for task2 as "Medium";
 Mark task2 as not done;
 
+Save tasks to "tasks.json";
+Load tasks from "tasks.json";
+
 If there's time left before "2024-12-10" {
     Show me "You have time to prepare slides!";
 } Otherwise focus on "Critical tasks";
@@ -165,13 +197,15 @@ Review all tasks;
 **Saída Esperada:**
 ```plaintext
 Task 'Finish report' defined.
-Deadline for 'Finish report' set to 2024-12-01.
+Set deadline for 'Finish report' to 2024-12-01.
 Set priority for 'Finish report' to High.
 Set category for 'Finish report' to Work.
 Task 'Finish report' marked as done.
 Task 'Prepare slides' defined.
 Set priority for 'Prepare slides' to Medium.
 Task 'Prepare slides' marked as not done.
+Tasks saved to tasks.json.
+Tasks loaded from tasks.json.
 You have time to prepare slides!
 Reviewing all tasks:
  - task1: 'Finish report', Deadline: 2024-12-01, Status: done
