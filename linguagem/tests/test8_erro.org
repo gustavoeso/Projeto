@@ -1,0 +1,12 @@
+Define a task task1 as "Finish report";
+Set deadline for task1 as "2024-12-01";
+Set priority for task1 as "High";
+Save tasks to "tasks.json";
+
+Load tasks from "tasks.json";
+Review all tasks;
+
+Show me "This is a test of formatted output!";
+Show me task1;
+
+Show me task2;  # Variável inexistente

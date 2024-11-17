@@ -5,4 +5,4 @@ Show me "Welcome to your productivity assistant!";
 Mark task1 as done;
 Show me task1;
 
-Review all variables;
+Review all tasks;

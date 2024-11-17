@@ -16,7 +16,10 @@ def expect(token_type):
         pos += 1
         return tokens[pos - 1][1]
     else:
-        raise SyntaxError(f"Expected {token_type}, found {tokens[pos] if pos < len(tokens) else 'EOF'}")
+        expected = token_type
+        found = tokens[pos][0] if pos < len(tokens) else "EOF"
+        raise SyntaxError(f"SyntaxError: Expected {expected}, found {found} at position {pos}.")
+
 
 def parse_block():
     """Parses a block of statements enclosed by '{' and '}'."""
@@ -36,6 +39,7 @@ def parse_statement():
         task_name = expect("STRING")
         expect("SEMICOLON")
         return Node("DEFINE_TASK", identifier, [Node("STRING", task_name)])
+    
     elif tokens[pos][0] == "SET_DEADLINE":
         expect("SET_DEADLINE")
         identifier = expect("IDENTIFIER")
@@ -43,6 +47,7 @@ def parse_statement():
         deadline = expect("STRING")
         expect("SEMICOLON")
         return Node("SET_DEADLINE", identifier, [Node("STRING", deadline)])
+    
     elif tokens[pos][0] == "IF_TIME_LEFT":
         expect("IF_TIME_LEFT")
         expect("BEFORE")
@@ -58,12 +63,14 @@ def parse_statement():
             Node("TRUE_BLOCK", None, true_block),
             else_block if else_block else None
         ])
+    
     elif tokens[pos][0] == "REPEAT_UNTIL_COMPLETE":
         expect("REPEAT_UNTIL_COMPLETE")
         expect("LBRACE")
         loop_block = parse_block()
         expect("RBRACE")
         return Node("REPEAT_UNTIL_COMPLETE", None, loop_block)
+    
     elif tokens[pos][0] == "DO_IT_AGAIN":
         expect("DO_IT_AGAIN")
         count = int(expect("NUMBER"))
@@ -72,6 +79,7 @@ def parse_statement():
         loop_block = parse_block()
         expect("RBRACE")
         return Node("DO_IT_AGAIN", count, loop_block)
+    
     elif tokens[pos][0] == "MARK_AS_DONE":
         expect("MARK_AS_DONE")
         task_id = expect("IDENTIFIER")
@@ -85,6 +93,7 @@ def parse_statement():
             raise SyntaxError(f"Expected 'as done' or 'as not done', found {tokens[pos]}")
         expect("SEMICOLON")
         return Node("MARK_AS_DONE", task_id, [Node("STATUS", status)])
+    
     elif tokens[pos][0] == "SET_ATTRIBUTE":
         expect("SET_ATTRIBUTE")
         attribute = expect("IDENTIFIER")
@@ -94,10 +103,12 @@ def parse_statement():
         value = expect("STRING")
         expect("SEMICOLON")
         return Node("SET_ATTRIBUTE", task_id, [Node("ATTRIBUTE", attribute), Node("VALUE", value)])
+    
     elif tokens[pos][0] == "REVIEW_ALL_TASKS":
         expect("REVIEW_ALL_TASKS")
         expect("SEMICOLON")
         return Node("REVIEW_ALL_TASKS", None, [])
+    
     elif tokens[pos][0] == "SHOW_ME":
         expect("SHOW_ME")
         if tokens[pos][0] == "STRING":  # Caso seja uma string
@@ -110,6 +121,19 @@ def parse_statement():
             return Node("SHOW_ME_VARIABLE", variable, [])
         else:
             raise SyntaxError(f"Expected STRING or IDENTIFIER, found {tokens[pos]}")
+        
+    elif tokens[pos][0] == "SAVE_TASKS":
+        expect("SAVE_TASKS")
+        filename = expect("STRING")
+        expect("SEMICOLON")
+        return Node("SAVE_TASKS", filename, [])
+
+    elif tokens[pos][0] == "LOAD_TASKS":
+        expect("LOAD_TASKS")
+        filename = expect("STRING")
+        expect("SEMICOLON")
+        return Node("LOAD_TASKS", filename, [])
+
     elif tokens[pos][0] == "SEMICOLON":
         pos += 1
         return None
