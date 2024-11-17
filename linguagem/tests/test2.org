@@ -1,0 +1,7 @@
+Define a task task1 as "Base task";
+Repeat until complete {
+    Define a task task2 as "Iterative task";
+}
+Do it again 3 times {
+    Define a task task3 as "Repeated task";
+}

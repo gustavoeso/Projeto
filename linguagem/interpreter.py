@@ -32,6 +32,17 @@ class Interpreter:
             else:  # Executa ELSE_BLOCK se houver
                 if len(node.children) > 1 and node.children[1]:  # ELSE_BLOCK existe
                     print(f"Focus on: {node.children[1].value.strip('"')}")
+        elif node.type == "REPEAT_UNTIL_COMPLETE":
+            # Limitar o loop para evitar infinito (pode ser ajustado com condições futuras)
+            print("Executing REPEAT_UNTIL_COMPLETE block.")
+            for _ in range(10):  # Simulação de limite (pode ser adaptado para condições reais)
+                for child in node.children:
+                    self.execute(child)
+        elif node.type == "DO_IT_AGAIN":
+            print(f"Executing DO_IT_AGAIN block {node.value} times.")
+            for _ in range(node.value):  # Executa o bloco o número de vezes especificado
+                for child in node.children:
+                    self.execute(child)
 
     def run(self, ast):
         """Itera sobre a AST e executa os nós."""

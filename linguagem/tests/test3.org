@@ -1,0 +1,4 @@
+Define a task task1 as "Base task";
+Do it again 2 times {
+    Define a task task2 as "Repeated task";
+}

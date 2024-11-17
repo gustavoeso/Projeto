@@ -7,6 +7,11 @@ TOKENS = [
     ("OTHERWISE_FOCUS", r"Otherwise focus on"),
     ("BEFORE", r"before"),
 
+    #loops
+    ("REPEAT_UNTIL_COMPLETE", r"Repeat until complete"),
+    ("DO_IT_AGAIN", r"Do it again"),
+    ("TIMES", r"times"),
+
     # Outras definições
     ("DEFINE_TASK", r"Define a task"),
     ("SET_DEADLINE", r"Set deadline for"),

@@ -45,8 +45,8 @@ def parse_statement():
         return Node("SET_DEADLINE", identifier, [Node("STRING", deadline)])
     elif tokens[pos][0] == "IF_TIME_LEFT":
         expect("IF_TIME_LEFT")
-        expect("BEFORE")  # Processa o 'before'
-        condition = expect("STRING")  # Exemplo: "2024-12-01"
+        expect("BEFORE")
+        condition = expect("STRING")
         expect("LBRACE")
         true_block = parse_block()
         expect("RBRACE")
@@ -54,17 +54,30 @@ def parse_statement():
         if pos < len(tokens) and tokens[pos][0] == "OTHERWISE_FOCUS":
             expect("OTHERWISE_FOCUS")
             else_block = Node("ELSE_BLOCK", expect("STRING"), [])
-        # Não espera um ";" após um bloco condicional
         return Node("IF", condition, [
             Node("TRUE_BLOCK", None, true_block),
             else_block if else_block else None
         ])
+    elif tokens[pos][0] == "REPEAT_UNTIL_COMPLETE":
+        expect("REPEAT_UNTIL_COMPLETE")
+        expect("LBRACE")
+        loop_block = parse_block()
+        expect("RBRACE")
+        return Node("REPEAT_UNTIL_COMPLETE", None, loop_block)
+    elif tokens[pos][0] == "DO_IT_AGAIN":
+        expect("DO_IT_AGAIN")
+        count = int(expect("NUMBER"))
+        expect("TIMES")
+        expect("LBRACE")
+        loop_block = parse_block()
+        expect("RBRACE")
+        return Node("DO_IT_AGAIN", count, loop_block)
     elif tokens[pos][0] == "SEMICOLON":
-        # Ignora tokens ';' fora de comandos diretos
         pos += 1
         return None
     else:
         raise SyntaxError(f"Unexpected token: {tokens[pos]}")
+
 
 def parse(tokens_input):
     """Parses the entire program."""
