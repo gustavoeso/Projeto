@@ -1,0 +1,8 @@
+Define a task task1 as "Complete project";
+Set deadline for task1 as "2024-12-10";
+
+Show me "Welcome to your productivity assistant!";
+Mark task1 as done;
+Show me task1;
+
+Review all variables;

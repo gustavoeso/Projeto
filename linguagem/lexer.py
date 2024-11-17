@@ -12,6 +12,21 @@ TOKENS = [
     ("DO_IT_AGAIN", r"Do it again"),
     ("TIMES", r"times"),
 
+    #status de conclusao
+    ("MARK_AS_DONE", r"Mark"),
+    ("AS_DONE", r"as done"),
+    ("AS_NOT_DONE", r"as not done"),
+
+    #atrubutos costumizados
+    ("SET_ATTRIBUTE", r"Set"),
+    ("FOR_TASK", r"for"),
+
+    #revisar todas as variaveis
+    ("REVIEW_ALL_TASKS", r"Review all tasks"),
+
+    #print
+    ("SHOW_ME", r"Show me"),
+
     # Outras definições
     ("DEFINE_TASK", r"Define a task"),
     ("SET_DEADLINE", r"Set deadline for"),

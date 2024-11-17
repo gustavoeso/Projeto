@@ -43,6 +43,50 @@ class Interpreter:
             for _ in range(node.value):  # Executa o bloco o número de vezes especificado
                 for child in node.children:
                     self.execute(child)
+        elif node.type == "MARK_AS_DONE":
+            task_id = node.value
+            status = node.children[0].value
+            if task_id in self.tasks:
+                self.tasks[task_id]["status"] = status
+                print(f"Task '{self.tasks[task_id]['name']}' marked as {status}.")
+            else:
+                print(f"Task {task_id} not found.")
+        elif node.type == "SET_ATTRIBUTE":
+            task_id = node.value
+            attribute = node.children[0].value
+            attr_value = node.children[1].value.strip('"')
+            if task_id in self.tasks:
+                self.tasks[task_id][attribute] = attr_value
+                print(f"Set {attribute} for '{self.tasks[task_id]['name']}' to {attr_value}.")
+            else:
+                print(f"Task {task_id} not found.")
+        elif node.type == "REVIEW_ALL_TASKS":
+            print("Reviewing all tasks:")
+            for task_id, task_info in self.tasks.items():
+                task_name = task_info.get("name", "Unnamed task")
+                deadline = task_info.get("deadline", "No deadline set")
+                status = task_info.get("status", "not done")
+                print(f" - {task_id}: '{task_name}', Deadline: {deadline}, Status: {status}")
+                for key, value in task_info.items():
+                    if key not in ["name", "deadline", "status"]:
+                        print(f"   - {key}: {value}")
+        elif node.type == "SHOW_ME":
+            # Mostrar uma string diretamente
+            message = node.children[0].value.strip('"')  # Remove aspas da string
+            print(message)
+
+        elif node.type == "SHOW_ME_VARIABLE":
+            # Mostrar o valor de uma variável
+            variable = node.value
+            if variable in self.tasks:
+                task_info = self.tasks[variable]
+                task_name = task_info.get("name", "Unnamed task")
+                deadline = task_info.get("deadline", "No deadline set")
+                status = task_info.get("status", "not done")
+                print(f"{variable}: '{task_name}', Deadline: {deadline}, Status: {status}")
+            else:
+                print(f"Variable '{variable}' not found.")
+
 
     def run(self, ast):
         """Itera sobre a AST e executa os nós."""

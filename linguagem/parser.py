@@ -72,6 +72,44 @@ def parse_statement():
         loop_block = parse_block()
         expect("RBRACE")
         return Node("DO_IT_AGAIN", count, loop_block)
+    elif tokens[pos][0] == "MARK_AS_DONE":
+        expect("MARK_AS_DONE")
+        task_id = expect("IDENTIFIER")
+        if tokens[pos][0] == "AS_DONE":
+            expect("AS_DONE")
+            status = "done"
+        elif tokens[pos][0] == "AS_NOT_DONE":
+            expect("AS_NOT_DONE")
+            status = "not done"
+        else:
+            raise SyntaxError(f"Expected 'as done' or 'as not done', found {tokens[pos]}")
+        expect("SEMICOLON")
+        return Node("MARK_AS_DONE", task_id, [Node("STATUS", status)])
+    elif tokens[pos][0] == "SET_ATTRIBUTE":
+        expect("SET_ATTRIBUTE")
+        attribute = expect("IDENTIFIER")
+        expect("FOR_TASK")
+        task_id = expect("IDENTIFIER")
+        expect("AS")
+        value = expect("STRING")
+        expect("SEMICOLON")
+        return Node("SET_ATTRIBUTE", task_id, [Node("ATTRIBUTE", attribute), Node("VALUE", value)])
+    elif tokens[pos][0] == "REVIEW_ALL_TASKS":
+        expect("REVIEW_ALL_TASKS")
+        expect("SEMICOLON")
+        return Node("REVIEW_ALL_TASKS", None, [])
+    elif tokens[pos][0] == "SHOW_ME":
+        expect("SHOW_ME")
+        if tokens[pos][0] == "STRING":  # Caso seja uma string
+            message = expect("STRING")
+            expect("SEMICOLON")
+            return Node("SHOW_ME", None, [Node("MESSAGE", message)])
+        elif tokens[pos][0] == "IDENTIFIER":  # Caso seja uma variável
+            variable = expect("IDENTIFIER")
+            expect("SEMICOLON")
+            return Node("SHOW_ME_VARIABLE", variable, [])
+        else:
+            raise SyntaxError(f"Expected STRING or IDENTIFIER, found {tokens[pos]}")
     elif tokens[pos][0] == "SEMICOLON":
         pos += 1
         return None
