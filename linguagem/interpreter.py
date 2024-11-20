@@ -44,21 +44,6 @@ class Interpreter:
             else:
                 print(f"Task {task_id} not found.")
 
-        elif node.type == "IF":
-            condition_node = node.children[0]
-            condition = self.get_value(condition_node)
-            today = datetime.now().strftime("%Y-%m-%d")
-
-            if today < condition:  # Evaluate the condition
-                true_block = node.children[1]  # TRUE_BLOCK
-                for child in true_block.children:
-                    self.execute(child)
-            else:
-                if len(node.children) > 2 and node.children[2]:  # ELSE_BLOCK exists
-                    else_node = node.children[2]
-                    else_value = self.get_value(else_node.value)
-                    print(f"Focus on: {else_value}")
-
         elif node.type == "REPEAT_UNTIL_COMPLETE":
             print("Executing REPEAT_UNTIL_COMPLETE block.")
             for _ in range(10):  # Simulation of a limit
@@ -108,8 +93,31 @@ class Interpreter:
 
         elif node.type == "SHOW_ME":
             message_node = node.children[0]
-            message = self.get_value(message_node)
-            print(message)
+            if message_node.type == 'IDENTIFIER':
+                var_name = message_node.value
+                # First, check if it's a task
+                if var_name in self.tasks:
+                    task_info = self.tasks[var_name]
+                    task_name = task_info.get("name", "Unnamed task")
+                    deadline = task_info.get("deadline", "No deadline set")
+                    status = task_info.get("status", "not done")
+                    other_attributes = ", ".join(
+                        f"{key}: {value}" for key, value in task_info.items() if key not in ["name", "deadline", "status"]
+                    )
+                    print(f"{var_name}: '{task_name}', Deadline: {deadline}, Status: {status}")
+                    if other_attributes:
+                        print(f"Other Attributes: {other_attributes}")
+                else:
+                    # Check if it's a variable in the variable stack
+                    value = self.resolve_variable(var_name)
+                    if value != var_name:
+                        print(f"{var_name}: {value}")
+                    else:
+                        print(f"RuntimeError: Variable or task '{var_name}' not found.")
+            else:
+                # It's a string, print it directly
+                message = self.get_value(message_node)
+                print(message)
 
         elif node.type == "SAVE_TASKS":
             filename = node.value.strip('"')

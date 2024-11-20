@@ -2,3 +2,6 @@ Define a task task1 as "Finish report";
 If there's time left before "2024-12-01" {
     Define a task task2 as "Prepare slides";
 } Otherwise focus on "Critical tasks";
+
+Show me "Welcome to ProductivityLang!";
+Show me task1;
