@@ -51,40 +51,59 @@ argument_list   = ( string | identifier ) , { "," , ( string | identifier ) } ;
 
 ## **Analisador Léxico e Sintático com Flex e Bison**
 
-Para implementar a análise léxica e sintática, utilizamos as ferramentas **Flex** e **Bison**. A seguir, descrevemos como configuramos e executamos o processo.
+Para implementar a análise léxica e sintática da linguagem ProductivityLang, utilizamos as ferramentas **Flex** e **Bison**. A seguir, descrevemos a estrutura dos arquivos, o processo de geração e execução do compilador.
 
-### 1. Estrutura dos Arquivos
+---
 
-- **Arquivo `.l` (Flex):** Define as regras léxicas da linguagem, como palavras-chave, identificadores e literais.
-- **Arquivo `.y` (Bison):** Define a gramática da linguagem e como cada construção é tratada no código.
+### **1. Estrutura dos Arquivos**
 
-Os arquivos principais são:
-- `productivitylang.l`: Arquivo de regras léxicas.
-- `productivitylang.y`: Arquivo de gramática e regras sintáticas.
+Os principais arquivos utilizados no processo estão na pasta `Flex_Bison`:
 
-### 2. Passo a Passo de Geração
+1. **Arquivos Originais**:
+   - `productivitylang.l`: Define as regras léxicas da linguagem, como palavras-chave, identificadores e literais.
+   - `productivitylang.y`: Define a gramática e as ações associadas às regras sintáticas.
 
-1. **Gerar os arquivos necessários com Bison e Flex:**
+2. **Arquivos Gerados**:
+   Durante o processo de compilação, os seguintes arquivos são gerados automaticamente:
+   - `productivitylang.tab.c`: Arquivo em C gerado pelo **Bison**, que implementa o analisador sintático.
+   - `productivitylang.tab.h`: Cabeçalho gerado pelo **Bison**, contendo definições de tokens para comunicação com o Flex.
+   - `lex.yy.c`: Arquivo em C gerado pelo **Flex**, que implementa o analisador léxico.
+
+---
+
+### **2. Passo a Passo de Geração**
+
+1. **Geração dos Arquivos com Bison e Flex**:
+   Execute os seguintes comandos no terminal para gerar o compilador:
    ```bash
    bison -d productivitylang.y
    flex productivitylang.l
    gcc -o productivitylang productivitylang.tab.c lex.yy.c -lfl
    ```
 
-2. **Executar o compilador:**
+2. **Executar o Compilador**:
+   Após gerar o executável `productivitylang`, utilize-o para interpretar os arquivos de entrada escritos na linguagem ProductivityLang:
    ```bash
-   ./productivitylang < tests/input_file
+   ./productivitylang < tests/input_file1
    ```
 
-### 3. Configuração do `Makefile`
+3. **Limpar os Arquivos Gerados**:
+   Para remover os arquivos gerados durante a compilação:
+   ```bash
+   make clean
+   ```
 
-Foi criado um arquivo `Makefile` para automatizar o processo de compilação. Ele realiza os seguintes passos:
+---
 
-1. Geração do analisador sintático e do cabeçalho com o **Bison**.
-2. Geração do analisador léxico com o **Flex**.
-3. Compilação do código em C gerado por Bison e Flex para criar o executável `productivitylang`.
+### **3. Configuração do `Makefile`**
 
-#### Estrutura do `Makefile`:
+Um arquivo `Makefile` foi configurado para automatizar o processo de compilação. Ele realiza as seguintes etapas:
+
+1. Geração dos arquivos `productivitylang.tab.c` e `productivitylang.tab.h` com o **Bison**.
+2. Geração do arquivo `lex.yy.c` com o **Flex**.
+3. Compilação dos arquivos gerados em um único executável `productivitylang`.
+
+#### **Estrutura do `Makefile`**:
 
 ```makefile
 all: productivitylang
@@ -97,6 +116,38 @@ productivitylang: productivitylang.l productivitylang.y
 clean:
 	rm -f productivitylang productivitylang.tab.c productivitylang.tab.h lex.yy.c
 ```
+
+---
+
+### **4. Exemplo de Geração e Execução**
+
+Abaixo, um exemplo completo do processo de geração e execução:
+
+1. **Compilar o Código**:
+   ```bash
+   make
+   ```
+
+2. **Executar com Arquivo de Entrada**:
+   ```bash
+   ./productivitylang < tests/input_file1
+   ```
+
+3. **Exemplo de Saída para `tests/input_file1`**:
+   - Arquivo de entrada:
+     ```plaintext
+     Define a task task1 as "Write report";
+     Set deadline for task1 as "2023-11-30";
+     Repeat until complete {
+         Define a task task2 as "Prepare slides";
+     }
+     ```
+   - Saída esperada:
+     ```plaintext
+     Defined task: task1 as "Write report"
+     Set deadline for task: task1 as "2023-11-30"
+     Repeat block executed.
+     ```
 
 ---
 
