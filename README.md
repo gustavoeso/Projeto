@@ -49,6 +49,57 @@ argument_list   = ( string | identifier ) , { "," , ( string | identifier ) } ;
 
 ---
 
+## **Analisador Léxico e Sintático com Flex e Bison**
+
+Para implementar a análise léxica e sintática, utilizamos as ferramentas **Flex** e **Bison**. A seguir, descrevemos como configuramos e executamos o processo.
+
+### 1. Estrutura dos Arquivos
+
+- **Arquivo `.l` (Flex):** Define as regras léxicas da linguagem, como palavras-chave, identificadores e literais.
+- **Arquivo `.y` (Bison):** Define a gramática da linguagem e como cada construção é tratada no código.
+
+Os arquivos principais são:
+- `productivitylang.l`: Arquivo de regras léxicas.
+- `productivitylang.y`: Arquivo de gramática e regras sintáticas.
+
+### 2. Passo a Passo de Geração
+
+1. **Gerar os arquivos necessários com Bison e Flex:**
+   ```bash
+   bison -d productivitylang.y
+   flex productivitylang.l
+   gcc -o productivitylang productivitylang.tab.c lex.yy.c -lfl
+   ```
+
+2. **Executar o compilador:**
+   ```bash
+   ./productivitylang < tests/input_file
+   ```
+
+### 3. Configuração do `Makefile`
+
+Foi criado um arquivo `Makefile` para automatizar o processo de compilação. Ele realiza os seguintes passos:
+
+1. Geração do analisador sintático e do cabeçalho com o **Bison**.
+2. Geração do analisador léxico com o **Flex**.
+3. Compilação do código em C gerado por Bison e Flex para criar o executável `productivitylang`.
+
+#### Estrutura do `Makefile`:
+
+```makefile
+all: productivitylang
+
+productivitylang: productivitylang.l productivitylang.y
+	bison -d productivitylang.y
+	flex productivitylang.l
+	gcc -o productivitylang productivitylang.tab.c lex.yy.c -lfl
+
+clean:
+	rm -f productivitylang productivitylang.tab.c productivitylang.tab.h lex.yy.c
+```
+
+---
+
 ## **Conteúdo**
 1. [Características](#características)
 2. [Estruturas Básicas](#estruturas-básicas)

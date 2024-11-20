@@ -1,0 +1,5 @@
+Define a task task1 as "First task";
+Repeat until complete {
+    Define a task task2 as "Nested task";
+    Set deadline task2 as "2024-12-31";
+}

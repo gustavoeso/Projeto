@@ -1,0 +1,2 @@
+Define a task task1 as "Task with error";
+Set deadline task1 "2024-01-01";  # Faltando o "as"

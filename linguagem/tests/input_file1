@@ -1,0 +1,5 @@
+Define a task task1 as "Finish project";
+Set deadline task1 as "2024-12-01";
+Repeat until complete {
+    Define a task task2 as "Review tasks";
+}
