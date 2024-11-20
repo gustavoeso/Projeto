@@ -8,5 +8,9 @@ Define a task task2 as "Prepare slides";
 Set priority for task2 as "Medium";
 Mark task2 as not done;
 
+Define a task task3 as "caralha";
+Set priority for task3 as "High";
+Mark task3 as not done;
+
 Save tasks to "tasks_test.json";
 Review all tasks;

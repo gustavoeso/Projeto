@@ -1,23 +1,43 @@
+import json  # Import the json module
 from datetime import datetime
-import json
+from parser import Node
 
 class Interpreter:
     def __init__(self):
         self.tasks = {}
+        self.functions = {}  # Store functions
+        self.variable_stack = [{}]  # Stack for variable scopes
+
+    def resolve_variable(self, var_name):
+        for scope in reversed(self.variable_stack):
+            if var_name in scope:
+                return scope[var_name]
+        # If not found in variables, return the name itself
+        return var_name
+
+    def get_value(self, node):
+        if node.type == 'IDENTIFIER':
+            return self.resolve_variable(node.value)
+        else:
+            return node.value.strip('"')
 
     def execute(self, node):
-        if not node:  # Ignora nós inválidos ou None
+        if not node:
             return
 
         if node.type == "DEFINE_TASK":
-            task_id = node.value
-            task_name = node.children[0].value.strip('"')
+            task_id_node = node.children[0]
+            task_name_node = node.children[1]
+            task_id = self.get_value(task_id_node)
+            task_name = self.get_value(task_name_node)
             self.tasks[task_id] = {"name": task_name}
             print(f"Task '{task_name}' defined.")
 
         elif node.type == "SET_DEADLINE":
-            task_id = node.value
-            deadline = node.children[0].value.strip('"')
+            task_id_node = node.children[0]
+            deadline_node = node.children[1]
+            task_id = self.get_value(task_id_node)
+            deadline = self.get_value(deadline_node)
             if task_id in self.tasks:
                 self.tasks[task_id]["deadline"] = deadline
                 print(f"Deadline for '{self.tasks[task_id]['name']}' set to {deadline}.")
@@ -25,33 +45,36 @@ class Interpreter:
                 print(f"Task {task_id} not found.")
 
         elif node.type == "IF":
-            condition = node.value.strip('"')  # Exemplo: "2024-12-01"
+            condition_node = node.children[0]
+            condition = self.get_value(condition_node)
             today = datetime.now().strftime("%Y-%m-%d")
 
-            if today < condition:  # Avalia a condição
-                true_block = node.children[0]  # TRUE_BLOCK
-                for child in true_block.children:  # Iterar corretamente no TRUE_BLOCK
+            if today < condition:  # Evaluate the condition
+                true_block = node.children[1]  # TRUE_BLOCK
+                for child in true_block.children:
                     self.execute(child)
-            else:  # Executa ELSE_BLOCK se houver
-                if len(node.children) > 1 and node.children[1]:  # ELSE_BLOCK existe
-                    print(f"Focus on: {node.children[1].value.strip('"')}")
+            else:
+                if len(node.children) > 2 and node.children[2]:  # ELSE_BLOCK exists
+                    else_node = node.children[2]
+                    else_value = self.get_value(else_node.value)
+                    print(f"Focus on: {else_value}")
 
         elif node.type == "REPEAT_UNTIL_COMPLETE":
-            # Limitar o loop para evitar infinito (pode ser ajustado com condições futuras)
             print("Executing REPEAT_UNTIL_COMPLETE block.")
-            for _ in range(10):  # Simulação de limite (pode ser adaptado para condições reais)
+            for _ in range(10):  # Simulation of a limit
                 for child in node.children:
                     self.execute(child)
 
         elif node.type == "DO_IT_AGAIN":
             print(f"Executing DO_IT_AGAIN block {node.value} times.")
-            for _ in range(node.value):  # Executa o bloco o número de vezes especificado
+            for _ in range(node.value):
                 for child in node.children:
                     self.execute(child)
 
         elif node.type == "MARK_AS_DONE":
-            task_id = node.value
-            status = node.children[0].value
+            status = node.value
+            task_id_node = node.children[0]
+            task_id = self.get_value(task_id_node)
             if task_id in self.tasks:
                 self.tasks[task_id]["status"] = status
                 print(f"Task '{self.tasks[task_id]['name']}' marked as {status}.")
@@ -59,9 +82,11 @@ class Interpreter:
                 print(f"Task {task_id} not found.")
 
         elif node.type == "SET_ATTRIBUTE":
-            task_id = node.value
-            attribute = node.children[0].value
-            attr_value = node.children[1].value.strip('"')
+            attribute = node.value
+            task_id_node = node.children[0]
+            value_node = node.children[1]
+            task_id = self.get_value(task_id_node)
+            attr_value = self.get_value(value_node)
             if task_id in self.tasks:
                 self.tasks[task_id][attribute] = attr_value
                 print(f"Set {attribute} for '{self.tasks[task_id]['name']}' to {attr_value}.")
@@ -70,8 +95,8 @@ class Interpreter:
 
         elif node.type == "REVIEW_ALL_TASKS":
             print("Reviewing all tasks:")
-            print(f"{'Task ID':<10} | {'Name':<20} | {'Deadline':<15} | {'Status':<10} | Other Attributes")
-            print("-" * 70)
+            print(f"{'Task ID':<20} | {'Name':<20} | {'Deadline':<15} | {'Status':<10} | Other Attributes")
+            print("-" * 85)
             for task_id, task_info in self.tasks.items():
                 task_name = task_info.get("name", "Unnamed task")
                 deadline = task_info.get("deadline", "No deadline set")
@@ -79,47 +104,73 @@ class Interpreter:
                 other_attributes = ", ".join(
                     f"{key}: {value}" for key, value in task_info.items() if key not in ["name", "deadline", "status"]
                 )
-                print(f"{task_id:<10} | {task_name:<20} | {deadline:<15} | {status:<10} | {other_attributes}")
-
+                print(f"{task_id:<20} | {task_name:<20} | {deadline:<15} | {status:<10} | {other_attributes}")
 
         elif node.type == "SHOW_ME":
-            # Mostrar uma string diretamente
-            message = node.children[0].value.strip('"')  # Remove aspas da string
+            message_node = node.children[0]
+            message = self.get_value(message_node)
             print(message)
 
-        elif node.type == "SHOW_ME_VARIABLE":
-            variable = node.value
-            if variable in self.tasks:
-                task_info = self.tasks[variable]
-                task_name = task_info.get("name", "Unnamed task")
-                deadline = task_info.get("deadline", "No deadline set")
-                status = task_info.get("status", "not done")
-                print(f"{variable}: '{task_name}', Deadline: {deadline}, Status: {status}")
-            else:
-                print(f"RuntimeError: Variable '{variable}' not found.")
-
-
-        # Salvar tarefas
         elif node.type == "SAVE_TASKS":
-            filename = node.value.strip('"')  # Remove aspas
+            filename = node.value.strip('"')
             try:
-                with open(filename, "w") as file:
-                    json.dump(self.tasks, file, indent=4)
+                with open(filename, 'w') as f:
+                    json.dump(self.tasks, f, indent=4)
                 print(f"Tasks saved to {filename}.")
-            except IOError:
-                print(f"Error: Could not write to file '{filename}'.")
+            except Exception as e:
+                print(f"Error saving tasks to '{filename}': {e}")
 
-        # Carregar tarefas
         elif node.type == "LOAD_TASKS":
-            filename = node.value.strip('"')  # Remove aspas
+            filename = node.value.strip('"')
             try:
-                with open(filename, "r") as file:
-                    self.tasks = json.load(file)
-                print(f"Tasks loaded from {filename}, overwriting the current state.")
+                with open(filename, 'r') as f:
+                    self.tasks = json.load(f)
+                print(f"Tasks loaded from {filename}.")
             except FileNotFoundError:
                 print(f"Error: File '{filename}' not found.")
+            except json.JSONDecodeError as e:
+                print(f"Error loading tasks from '{filename}': {e}")
+
+        elif node.type == "DEFINE_FUNCTION":
+            func_name = node.value
+            func_params = node.children[0].value
+            func_body = node.children[1].children
+            self.functions[func_name] = {"params": func_params, "body": func_body}
+            print(f"Function '{func_name}' defined with parameters {func_params}.")
+
+        elif node.type == "RUN_FUNCTION":
+            func_name = node.value
+            if func_name not in self.functions:
+                print(f"RuntimeError: Function '{func_name}' is not defined.")
+                return
+
+            func_data = self.functions[func_name]
+            func_params = func_data["params"]
+            func_body = func_data["body"]
+            func_args = node.children[0].value
+
+            if len(func_params) != len(func_args):
+                print(f"RuntimeError: Function '{func_name}' expects {len(func_params)} arguments, "
+                      f"but {len(func_args)} were provided.")
+                return
+
+            local_vars = {}
+            for param, arg in zip(func_params, func_args):
+                if arg.startswith('"') and arg.endswith('"'):
+                    local_vars[param] = arg.strip('"')
+                else:
+                    resolved_arg = self.resolve_variable(arg)
+                    local_vars[param] = resolved_arg
+
+            self.variable_stack.append(local_vars)
+            for statement in func_body:
+                self.execute(statement)
+            self.variable_stack.pop()
+
+        else:
+            print(f"RuntimeError: Unrecognized node type '{node.type}'.")
 
     def run(self, ast):
-        """Itera sobre a AST e executa os nós."""
+        """Iterates over the AST and executes the nodes."""
         for node in ast:
             self.execute(node)

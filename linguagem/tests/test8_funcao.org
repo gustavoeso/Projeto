@@ -1,0 +1,10 @@
+Define function addHomework(taskName, deadline) {
+    Define a task taskName as taskName;
+    Set deadline for taskName as deadline;
+    Set category for taskName as "Homework";
+}
+
+Run addHomework("Math homework", "2024-12-01");
+Run addHomework("Science homework", "2024-12-05");
+
+Review all tasks;

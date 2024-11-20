@@ -1,48 +1,51 @@
 import re
 
-# Definição dos tokens
+# Definition of tokens
 TOKENS = [
-    # Condicionais
+    # Conditionals
     ("IF_TIME_LEFT", r"If there's time left"),
     ("OTHERWISE_FOCUS", r"Otherwise focus on"),
     ("BEFORE", r"before"),
 
-    #loops
+    # Loops
     ("REPEAT_UNTIL_COMPLETE", r"Repeat until complete"),
     ("DO_IT_AGAIN", r"Do it again"),
     ("TIMES", r"times"),
 
-    #status de conclusao
+    # Completion status
     ("MARK_AS_DONE", r"Mark"),
     ("AS_DONE", r"as done"),
     ("AS_NOT_DONE", r"as not done"),
 
-    #atrubutos costumizados
+    # Custom attributes
     ("SET_ATTRIBUTE", r"Set"),
     ("FOR_TASK", r"for"),
 
-    #revisar todas as variaveis
+    # Review tasks
     ("REVIEW_ALL_TASKS", r"Review all tasks"),
 
-    #print
+    # Print
     ("SHOW_ME", r"Show me"),
 
-    #persistencia de dados
+    # Data persistence
     ("SAVE_TASKS", r"Save tasks to"),
     ("LOAD_TASKS", r"Load tasks from"),
 
-    # Outras definições
+    # Functions
+    ("DEFINE_FUNCTION", r"Define function"),
+    ("RUN_FUNCTION", r"Run"),
+    ("LPAREN", r"\("),  # (
+    ("RPAREN", r"\)"),  # )
+    ("COMMA", r","),    # ,
+
+    # Other definitions
     ("DEFINE_TASK", r"Define a task"),
     ("SET_DEADLINE", r"Set deadline for"),
     ("PRIORITIZE", r"Prioritize this"),
-    ("REPEAT_UNTIL_COMPLETE", r"Repeat until complete"),
-    ("DO_IT_AGAIN", r"Do it again"),
-    ("IF_TIME_LEFT", r"If there's time left"),
-    ("OTHERWISE_FOCUS", r"Otherwise focus on"),
     ("AS", r"as"),
-    ("STRING", r'"[^"]*"'),  # Strings entre aspas
-    ("IDENTIFIER", r"[a-zA-Z_][a-zA-Z0-9_]*"),  # Identificadores
-    ("NUMBER", r"\d+"),  # Números inteiros
+    ("STRING", r'"[^"]*"'),  # Strings in quotes
+    ("IDENTIFIER", r"[a-zA-Z_][a-zA-Z0-9_]*"),  # Identifiers
+    ("NUMBER", r"\d+"),  # Integers
     ("LBRACE", r"{"),  # {
     ("RBRACE", r"}"),  # }
     ("EQUALS", r"="),  # =
