@@ -1,11 +1,55 @@
-## **ProductivityLang**
+# **ProductivityLang**
 
 ### **Introdução**
 **ProductivityLang** é uma linguagem de programação criada para auxiliar na organização e gestão de tarefas. A linguagem permite criar, revisar e manipular tarefas, prazos e atributos associados a elas de forma intuitiva.
 
 ---
 
-### **Conteúdo**
+## **Estrutura Formal - EBNF**
+Abaixo está a gramática formal da linguagem ProductivityLang, definida em EBNF (Extended Backus-Naur Form). Esta gramática descreve todas as construções permitidas na linguagem.
+
+```ebnf
+program         = { statement } ;
+
+statement       = define_task
+                | set_deadline
+                | set_attribute
+                | mark_as_done
+                | review_all_tasks
+                | show_me
+                | save_tasks
+                | load_tasks
+                | conditional
+                | loop
+                | function_definition
+                | run_function ;
+
+identifier      = letter , { letter | digit | "_" } ;
+string          = '"' , { character } , '"' ;
+number          = digit , { digit } ;
+
+define_task     = "Define a task" , identifier , "as" , ( string | identifier ) , ";" ;
+set_deadline    = "Set deadline for" , identifier , "as" , ( string | identifier ) , ";" ;
+set_attribute   = "Set" , identifier , "for" , identifier , "as" , ( string | identifier ) , ";" ;
+mark_as_done    = "Mark" , identifier , ( "as done" | "as not done" ) , ";" ;
+review_all_tasks = "Review all tasks" , ";" ;
+show_me         = "Show me" , ( string | identifier ) , ";" ;
+save_tasks      = "Save tasks to" , string , ";" ;
+load_tasks      = "Load tasks from" , string , ";" ;
+conditional     = "If there's time left before" , ( string | identifier ) , block ,
+                  [ "Otherwise focus on" , ( string | identifier ) ] ;
+block           = "{" , { statement } , "}" ;
+loop            = "Repeat until complete" , block
+                | "Do it again" , number , "times" , block ;
+function_definition = "Define function" , identifier , "(" , [ parameter_list ] , ")" , block ;
+parameter_list  = identifier , { "," , identifier } ;
+run_function    = "Run" , identifier , "(" , [ argument_list ] , ")" , ";" ;
+argument_list   = ( string | identifier ) , { "," , ( string | identifier ) } ;
+```
+
+---
+
+## **Conteúdo**
 1. [Características](#características)
 2. [Estruturas Básicas](#estruturas-básicas)
    - [Variáveis](#variáveis)
@@ -19,7 +63,6 @@
    - [Salvar e Carregar Tarefas](#salvar-e-carregar-tarefas)
    - [Revisar Tarefas](#revisar-tarefas)
    - [Exibir Informações](#exibir-informações)
-   - [Funções](#funções)
 4. [Comentários](#comentários)
 5. [Formato de Data](#formato-de-data)
 6. [Exemplo Completo](#exemplo-completo)
