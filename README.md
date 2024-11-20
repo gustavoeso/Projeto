@@ -1,11 +1,3 @@
-Projeto de Logica Computacional para criação de uma linguagem de programação
-
-Autalmente no compilador atual, temos um limite de rodar 10 iteracoes de um programa, caso o programa ultrapasse esse limite, o compilador irá parar a execução do programa por questões de segurança.
-
-test5 tem um overview por cima de coisas que podem ser feitas na nossa linguagem.
-
----
-
 ## **ProductivityLang**
 
 ### **Introdução**
@@ -27,6 +19,7 @@ test5 tem um overview por cima de coisas que podem ser feitas na nossa linguagem
    - [Salvar e Carregar Tarefas](#salvar-e-carregar-tarefas)
    - [Revisar Tarefas](#revisar-tarefas)
    - [Exibir Informações](#exibir-informações)
+   - [Funções](#funções)
 4. [Comentários](#comentários)
 5. [Formato de Data](#formato-de-data)
 6. [Exemplo Completo](#exemplo-completo)
@@ -38,6 +31,7 @@ test5 tem um overview por cima de coisas que podem ser feitas na nossa linguagem
 - Estruturas básicas de programação: variáveis, loops e condicionais.
 - Comandos intuitivos como `Define a task`, `Set deadline`, e `Review all tasks`.
 - Suporte para salvar e carregar tarefas em arquivos JSON.
+- Suporte para criação e execução de funções.
 - Suporte para comentários no código.
 
 ---
@@ -142,6 +136,15 @@ test5 tem um overview por cima de coisas que podem ser feitas na nossa linguagem
   Review all tasks;
   ```
 
+- **Exemplo de saída:**
+  ```plaintext
+  Reviewing all tasks:
+  Task ID             | Name                 | Deadline        | Status     | Other Attributes
+  ---------------------------------------------------------------------------------------------
+  task1               | Finish report        | 2024-12-01      | done       | priority: High, category: Work
+  task2               | Prepare slides       | No deadline set | not done   | priority: Medium
+  ```
+
 ---
 
 #### **Exibir Informações**
@@ -150,6 +153,24 @@ test5 tem um overview por cima de coisas que podem ser feitas na nossa linguagem
   ```plaintext
   Show me "Welcome to ProductivityLang!";
   Show me task1;
+  ```
+
+---
+
+#### **Funções**
+- Crie e execute funções para automatizar tarefas repetitivas.
+- **Definir funções:**
+  ```plaintext
+  Define function addHomework(taskName, taskDeadline) {
+      Define a task taskName as taskName;
+      Set deadline for taskName as taskDeadline;
+      Set category for taskName as "Homework";
+  }
+  ```
+- **Executar funções:**
+  ```plaintext
+  Run addHomework("Math Homework", "2024-12-01");
+  Run addHomework("Science Project", "2024-12-15");
   ```
 
 ---
@@ -187,6 +208,15 @@ Mark task2 as not done;
 Save tasks to "tasks.json";
 Load tasks from "tasks.json";
 
+Define function addHomework(taskName, taskDeadline) {
+    Define a task taskName as taskName;
+    Set deadline for taskName as taskDeadline;
+    Set category for taskName as "Homework";
+}
+
+Run addHomework("Math Homework", "2024-12-01");
+Run addHomework("Science Project", "2024-12-15");
+
 If there's time left before "2024-12-10" {
     Show me "You have time to prepare slides!";
 } Otherwise focus on "Critical tasks";
@@ -197,7 +227,7 @@ Review all tasks;
 **Saída Esperada:**
 ```plaintext
 Task 'Finish report' defined.
-Set deadline for 'Finish report' to 2024-12-01.
+Deadline for 'Finish report' set to 2024-12-01.
 Set priority for 'Finish report' to High.
 Set category for 'Finish report' to Work.
 Task 'Finish report' marked as done.
@@ -206,11 +236,19 @@ Set priority for 'Prepare slides' to Medium.
 Task 'Prepare slides' marked as not done.
 Tasks saved to tasks.json.
 Tasks loaded from tasks.json.
+Function 'addHomework' defined with parameters ['taskName', 'taskDeadline'].
+Task 'Math Homework' defined.
+Deadline for 'Math Homework' set to 2024-12-01.
+Set category for 'Math Homework' to Homework.
+Task 'Science Project' defined.
+Deadline for 'Science Project' set to 2024-12-15.
+Set category for 'Science Project' to Homework.
 You have time to prepare slides!
 Reviewing all tasks:
- - task1: 'Finish report', Deadline: 2024-12-01, Status: done
-   - priority: High
-   - category: Work
- - task2: 'Prepare slides', Deadline: No deadline set, Status: not done
-   - priority: Medium
+Task ID             | Name                 | Deadline        | Status     | Other Attributes
+---------------------------------------------------------------------------------------------
+task1               | Finish report        | 2024-12-01      | done       | priority: High, category: Work
+task2               | Prepare slides       | No deadline set | not done   | priority: Medium
+Math Homework       | Math Homework        | 2024-12-01      | not done   | category: Homework
+Science Project     | Science Project      | 2024-12-15      | not done   | category: Homework
 ```
