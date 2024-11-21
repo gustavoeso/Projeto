@@ -49,6 +49,12 @@ argument_list   = ( string | identifier ) , { "," , ( string | identifier ) } ;
 
 ---
 
+## **Diagrama Sintático**
+
+![Diagrama Sintático](imgs/DS_organization_lang.png)
+
+---
+
 ## **Analisador Léxico e Sintático com Flex e Bison**
 
 Para implementar a análise léxica e sintática da linguagem ProductivityLang, utilizamos as ferramentas **Flex** e **Bison**. A seguir, descrevemos a estrutura dos arquivos, o processo de geração e execução do compilador.
@@ -396,4 +402,3 @@ task1               | Finish report        | 2024-12-01      | done       | prio
 task2               | Prepare slides       | No deadline set | not done   | priority: Medium
 Math Homework       | Math Homework        | 2024-12-01      | not done   | category: Homework
 Science Project     | Science Project      | 2024-12-15      | not done   | category: Homework
-```
