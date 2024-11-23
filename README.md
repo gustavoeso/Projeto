@@ -57,90 +57,122 @@ argument_list   = ( string | identifier ) , { "," , ( string | identifier ) } ;
 
 ## **Analisador Léxico e Sintático com Flex e Bison**
 
-Para implementar a análise léxica e sintática da linguagem ProductivityLang, utilizamos as ferramentas **Flex** e **Bison**. A seguir, descrevemos a estrutura dos arquivos, o processo de geração e execução do compilador.
-
----
+Para implementar a análise léxica e sintática da linguagem **ProductivityLang**, utilizamos as ferramentas **Flex** e **Bison**. Estas ferramentas permitem a definição de regras léxicas e gramaticais que transformam o código fonte escrito em ProductivityLang em um executável funcional.
 
 ### **1. Estrutura dos Arquivos**
 
-Os principais arquivos utilizados no processo estão na pasta `Flex_Bison`:
+Os principais arquivos envolvidos no processo de análise léxica e sintática estão localizados na pasta `Flex_Bison`:
 
-1. **Arquivos Originais**:
-   - `productivitylang.l`: Define as regras léxicas da linguagem, como palavras-chave, identificadores e literais.
-   - `productivitylang.y`: Define a gramática e as ações associadas às regras sintáticas.
+1. **Arquivos de Definição:**
+   - **`lexer.l`**: Arquivo de definição léxica criado com **Flex**. Nele, são definidas as regras para identificar tokens como palavras-chave, identificadores, literais de string e números.
+   - **`parser.y`**: Arquivo de definição sintática criado com **Bison**. Contém a gramática da linguagem ProductivityLang, especificando como os tokens são combinados para formar estruturas válidas na linguagem.
 
-2. **Arquivos Gerados**:
-   Durante o processo de compilação, os seguintes arquivos são gerados automaticamente:
-   - `productivitylang.tab.c`: Arquivo em C gerado pelo **Bison**, que implementa o analisador sintático.
-   - `productivitylang.tab.h`: Cabeçalho gerado pelo **Bison**, contendo definições de tokens para comunicação com o Flex.
-   - `lex.yy.c`: Arquivo em C gerado pelo **Flex**, que implementa o analisador léxico.
+2. **Arquivo de Tipos:**
+   - **`types.h`**: Arquivo de cabeçalho que define as estruturas de dados utilizadas pelo interpretador, como `Task`, `Function` e `Statement`. Este arquivo é incluído tanto em `lexer.l` quanto em `parser.y` para compartilhar definições entre análise léxica e sintática.
 
----
+3. **Arquivo de Compilação:**
+   - **`Makefile`**: Automatiza o processo de geração dos analisadores e a compilação do interpretador. Define as regras para gerar os arquivos necessários a partir de `lexer.l` e `parser.y`, e para compilar o executável final `productivitylang`.
 
-### **2. Passo a Passo de Geração**
+### **2. Processo de Geração e Compilação**
 
-1. **Geração dos Arquivos com Bison e Flex**:
-   Execute os seguintes comandos no terminal para gerar o compilador:
-   ```bash
-   bison -d productivitylang.y
-   flex productivitylang.l
-   gcc -o productivitylang productivitylang.tab.c lex.yy.c -lfl
-   ```
+O processo de geração e compilação do interpretador **ProductivityLang** segue as etapas abaixo, facilitadas pelo **Makefile**:
 
-2. **Executar o Compilador**:
-   Após gerar o executável `productivitylang`, utilize-o para interpretar os arquivos de entrada escritos na linguagem ProductivityLang:
-   ```bash
-   ./productivitylang < tests/input_file1
-   ```
+1. **Geração dos Analisadores com Flex e Bison:**
+   - **Bison** processa o arquivo `parser.y` para gerar dois arquivos:
+     - **`parser.tab.c`**: Implementação em C do analisador sintático.
+     - **`parser.tab.h`**: Cabeçalho contendo definições de tokens para comunicação com o Flex.
+   - **Flex** processa o arquivo `lexer.l` para gerar:
+     - **`lex.yy.c`**: Implementação em C do analisador léxico.
 
-3. **Limpar os Arquivos Gerados**:
-   Para remover os arquivos gerados durante a compilação:
-   ```bash
-   make clean
-   ```
+2. **Compilação dos Arquivos Gerados:**
+   - **GCC** compila os arquivos `parser.tab.c` e `lex.yy.c` junto com quaisquer outros arquivos necessários, ligando a biblioteca **Flex** (`-lfl`) para produzir o executável final:
+     ```bash
+     gcc -g -Wall -Wextra -Wno-unused-function -o productivitylang parser.tab.c lex.yy.c -lfl
+     ```
 
----
+3. **Automatização com Makefile:**
+   - O **Makefile** define regras para executar os comandos acima automaticamente. Ao executar `make`, o **Makefile**:
+     - Chama **Bison** para processar `parser.y`.
+     - Chama **Flex** para processar `lexer.l`.
+     - Compila os arquivos gerados em um único executável `productivitylang`.
+   - O comando `make clean` remove os arquivos gerados durante a compilação, permitindo uma recompilação limpa:
+     ```bash
+     make clean
+     make
+     ```
 
-### **3. Configuração do `Makefile`**
+### **3. Configuração do Makefile**
 
-Um arquivo `Makefile` foi configurado para automatizar o processo de compilação. Ele realiza as seguintes etapas:
-
-1. Geração dos arquivos `productivitylang.tab.c` e `productivitylang.tab.h` com o **Bison**.
-2. Geração do arquivo `lex.yy.c` com o **Flex**.
-3. Compilação dos arquivos gerados em um único executável `productivitylang`.
-
-#### **Estrutura do `Makefile`**:
+O **Makefile** está configurado para simplificar o processo de compilação e garantir que todas as dependências sejam corretamente gerenciadas. A seguir, apresenta-se a estrutura do **Makefile**:
 
 ```makefile
-all: productivitylang
+# Makefile para compilar o interpretador ProductivityLang usando Flex e Bison
 
-productivitylang: productivitylang.l productivitylang.y
-	bison -d productivitylang.y
-	flex productivitylang.l
-	gcc -o productivitylang productivitylang.tab.c lex.yy.c -lfl
+LEXER=lexer.l
+PARSER=parser.y
+EXECUTABLE=productivitylang
+TYPES=types.h
+
+LEXER_C=lex.yy.c
+PARSER_C=parser.tab.c
+PARSER_H=parser.tab.h
+
+CC=gcc
+CFLAGS=-g -Wall -Wextra -Wno-unused-function
+
+all: $(EXECUTABLE)
+
+$(EXECUTABLE): $(LEXER_C) $(PARSER_C)
+	$(CC) $(CFLAGS) -o $@ $(PARSER_C) $(LEXER_C) -lfl
+
+$(LEXER_C): $(LEXER) $(PARSER_H) $(TYPES)
+	flex $(LEXER)
+
+$(PARSER_C) $(PARSER_H): $(PARSER) $(TYPES)
+	bison -d $(PARSER)
+
+types.h:
 
 clean:
-	rm -f productivitylang productivitylang.tab.c productivitylang.tab.h lex.yy.c
+	rm -f $(EXECUTABLE) $(LEXER_C) $(PARSER_C) $(PARSER_H)
 ```
 
----
+**Explicação das Regras e Variáveis:**
 
-### **4. Exemplo de Geração e Execução**
+- **Variáveis:**
+  - `LEXER` e `PARSER`: Referenciam os arquivos de definição léxica e sintática.
+  - `EXECUTABLE`: Nome do executável final.
+  - `TYPES`: Arquivo de cabeçalho com definições de tipos.
+  - `LEXER_C`, `PARSER_C`, `PARSER_H`: Arquivos gerados por Flex e Bison.
+  - `CC` e `CFLAGS`: Compilador e flags de compilação utilizados.
 
-Abaixo, um exemplo completo do processo de geração e execução:
+- **Regras:**
+  - `all`: Alvo padrão que depende do executável.
+  - `$(EXECUTABLE)`: Compila os arquivos gerados por Flex e Bison em um executável.
+  - `$(LEXER_C)`: Gera o analisador léxico com Flex.
+  - `$(PARSER_C)` e `$(PARSER_H)`: Gera o analisador sintático com Bison.
+  - `clean`: Remove os arquivos gerados durante a compilação.
 
-1. **Compilar o Código**:
+### **4. Exemplo de Uso**
+
+A seguir, um exemplo completo do processo de geração e execução do interpretador:
+
+1. **Compilar o Interpretador:**
+   Navegue até o diretório `Flex_Bison` e execute:
    ```bash
    make
    ```
+   Este comando gera os analisadores léxico e sintático e compila o executável `productivitylang`.
 
-2. **Executar com Arquivo de Entrada**:
+2. **Executar com um Arquivo de Entrada:**
+   Execute o interpretador passando um arquivo de teste:
    ```bash
-   ./productivitylang < tests/input_file1
+   ./productivitylang tests/input_file1
    ```
 
-3. **Exemplo de Saída para `tests/input_file1`**:
-   - Arquivo de entrada:
+3. **Exemplo de Entrada e Saída:**
+
+   - **Arquivo de Entrada (`tests/input_file1`):**
      ```plaintext
      Define a task task1 as "Write report";
      Set deadline for task1 as "2023-11-30";
@@ -148,14 +180,14 @@ Abaixo, um exemplo completo do processo de geração e execução:
          Define a task task2 as "Prepare slides";
      }
      ```
-   - Saída esperada:
-     ```plaintext
-     Defined task: task1 as "Write report"
-     Set deadline for task: task1 as "2023-11-30"
-     Repeat block executed.
-     ```
 
----
+   - **Saída Esperada:**
+     ```plaintext
+     Define task: task1 as "Write report"
+     Set deadline for task1 as "2023-11-30"
+     Repeat block executed.
+     Parsing concluído com sucesso.
+     ```
 
 ## **Conteúdo**
 1. [Características](#características)
