@@ -1,0 +1,6 @@
+Define function greet(name) {
+    Show me "Hello, " name;
+}
+
+Run greet("Alice");
+Run greet("Bob");

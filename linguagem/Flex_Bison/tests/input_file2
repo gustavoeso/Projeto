@@ -1,4 +1,11 @@
-Define a task task1 as "Write report";
-Define a task task2 as "Prepare slides";
-Set deadline task1 as "2023-11-30";
-Set deadline task2 as "2023-12-15";
+Define a task task1 as "Finish project";
+Set deadline for task1 as "2024-12-01";
+
+Mark task1 as done;
+
+Define a task task2 as "Prepare presentation";
+Set deadline for task2 as "2024-12-05";
+
+Mark task2 as not done;
+
+Review all tasks;

@@ -1,0 +1,11 @@
+Define function complete_task(task_name) {
+    Mark task_name as done;
+    Show me task_name " has been completed.";
+}
+
+Define a task task1 as "Finish project";
+Set deadline for task1 as "2024-12-01";
+
+Run complete_task(task1);
+
+Review all tasks;

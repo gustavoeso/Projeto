@@ -1,5 +1,7 @@
-Define a task task1 as "First task";
-Repeat until complete {
-    Define a task task2 as "Nested task";
-    Set deadline task2 as "2024-12-31";
-}
+Define a task task1 as "Finish project";
+Set deadline for task1 as "2024-12-01";
+
+If there's time left before "2024-12-05" {
+    Define a task task_extra as "Extra task";
+    Show me "You have extra time!";
+} Otherwise focus on "task1";

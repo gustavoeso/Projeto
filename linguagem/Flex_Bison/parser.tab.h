@@ -35,15 +35,21 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_PRODUCTIVITYLANG_TAB_H_INCLUDED
-# define YY_YY_PRODUCTIVITYLANG_TAB_H_INCLUDED
+#ifndef YY_YY_PARSER_TAB_H_INCLUDED
+# define YY_YY_PARSER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 49 "parser.y"
+
+    #include "types.h"
+
+#line 53 "parser.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -54,14 +60,35 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    IDENTIFIER = 258,              /* IDENTIFIER  */
-    STRING = 259,                  /* STRING  */
-    DEFINE_TASK = 260,             /* DEFINE_TASK  */
-    SET_DEADLINE = 261,            /* SET_DEADLINE  */
-    REPEAT_UNTIL_COMPLETE = 262,   /* REPEAT_UNTIL_COMPLETE  */
-    AS = 263,                      /* AS  */
-    LBRACE = 264,                  /* LBRACE  */
-    RBRACE = 265                   /* RBRACE  */
+    DEFINE_FUNCTION = 258,         /* DEFINE_FUNCTION  */
+    DEFINE_TASK = 259,             /* DEFINE_TASK  */
+    SET_DEADLINE = 260,            /* SET_DEADLINE  */
+    SET_ATTRIBUTE = 261,           /* SET_ATTRIBUTE  */
+    FOR_TASK = 262,                /* FOR_TASK  */
+    AS_NOT_DONE = 263,             /* AS_NOT_DONE  */
+    AS_DONE = 264,                 /* AS_DONE  */
+    AS = 265,                      /* AS  */
+    MARK_AS_DONE = 266,            /* MARK_AS_DONE  */
+    REVIEW_ALL_TASKS = 267,        /* REVIEW_ALL_TASKS  */
+    SHOW_ME = 268,                 /* SHOW_ME  */
+    SAVE_TASKS = 269,              /* SAVE_TASKS  */
+    LOAD_TASKS = 270,              /* LOAD_TASKS  */
+    IF_TIME_LEFT = 271,            /* IF_TIME_LEFT  */
+    BEFORE = 272,                  /* BEFORE  */
+    OTHERWISE_FOCUS = 273,         /* OTHERWISE_FOCUS  */
+    REPEAT_UNTIL_COMPLETE = 274,   /* REPEAT_UNTIL_COMPLETE  */
+    DO_IT_AGAIN = 275,             /* DO_IT_AGAIN  */
+    TIMES = 276,                   /* TIMES  */
+    RUN_FUNCTION = 277,            /* RUN_FUNCTION  */
+    IDENTIFIER = 278,              /* IDENTIFIER  */
+    STRING = 279,                  /* STRING  */
+    NUMBER = 280,                  /* NUMBER  */
+    SEMICOLON = 281,               /* SEMICOLON  */
+    LBRACE = 282,                  /* LBRACE  */
+    RBRACE = 283,                  /* RBRACE  */
+    LPAREN = 284,                  /* LPAREN  */
+    RPAREN = 285,                  /* RPAREN  */
+    COMMA = 286                    /* COMMA  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -70,11 +97,15 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 11 "productivitylang.y"
+#line 53 "parser.y"
 
-    char* str;
+    char* string;
+    int number;
+    char** str_list;
+    Statement* stmt;
+    Statement* stmt_list;
 
-#line 78 "productivitylang.tab.h"
+#line 109 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -89,4 +120,4 @@ extern YYSTYPE yylval;
 int yyparse (void);
 
 
-#endif /* !YY_YY_PRODUCTIVITYLANG_TAB_H_INCLUDED  */
+#endif /* !YY_YY_PARSER_TAB_H_INCLUDED  */

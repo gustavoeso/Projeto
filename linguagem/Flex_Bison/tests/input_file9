@@ -1,0 +1,5 @@
+Define a task task1 as "Write report";
+Set deadline for task1 as "2023-11-30";
+Repeat until complete {
+    Define a task task2 as "Prepare slides";
+}

@@ -1,6 +1,11 @@
-Repeat until complete {
-    Define a task task3 as "Daily meeting";
-    Repeat until complete {
-        Define a task task4 as "Review tasks";
-    }
-}
+Define a task task1 as "Finish project";
+Set deadline for task1 as "2024-12-01";
+Set priority for task1 as "High";
+
+Define a task task2 as "Prepare presentation";
+Set deadline for task2 as "2024-12-05";
+Set priority for task2 as "Medium";
+
+Set status for task2 as "In Progress";
+
+Review all tasks;

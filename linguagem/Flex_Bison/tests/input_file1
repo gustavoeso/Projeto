@@ -1,5 +1,10 @@
 Define a task task1 as "Finish project";
-Set deadline task1 as "2024-12-01";
-Repeat until complete {
-    Define a task task2 as "Review tasks";
-}
+Set deadline for task1 as "2024-12-01";
+
+Define a task task2 as "Prepare presentation";
+Set deadline for task2 as "2024-12-05";
+
+Define a task task3 as "Submit report";
+Set deadline for task3 as "2024-12-03";
+
+Review all tasks;
