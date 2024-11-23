@@ -754,21 +754,27 @@ void execute_show_me(Statement* stmt, char** param_names, char** param_values, i
     char** values = (char**)stmt->data;
     for (int i = 0; values[i] != NULL; i++) {
         char* val = values[i];
-        int substituted = 0;
         // Substitute parameters
         for (int j = 0; j < param_count; j++) {
             if (strcmp(val, param_names[j]) == 0) {
                 val = param_values[j];
-                substituted = 1;
                 break;
             }
         }
-        // Remove quotes if not substituted
-        if (!substituted && val[0] == '"' && val[strlen(val) - 1] == '"') {
-            val[strlen(val) - 1] = '\0'; // Remove the last quote
-            val++; // Skip the first quote
+        // Remove quotes if it's a string literal
+        if (val[0] == '"' && val[strlen(val) - 1] == '"') {
+            // Criar uma cópia sem as aspas
+            char* trimmed = strdup(val + 1); // Pular a primeira aspa
+            trimmed[strlen(trimmed) - 1] = '\0'; // Remover a última aspa
+            printf("%s", trimmed);
+            free(trimmed);
+        } else {
+            printf("%s", val);
         }
-        printf("%s", val);
+        // Adicionar espaço se não for o último elemento
+        if (values[i + 1] != NULL) {
+            printf(" ");
+        }
     }
     printf("\n");
 }
