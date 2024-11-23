@@ -36,7 +36,9 @@ int yylex();
 
 program:
     program statement
+        { printf("Program processed.\n"); }
     | /* vazio */
+        { /* Nothing to do here */ }
     ;
 
 statement:
@@ -72,6 +74,7 @@ statement:
 
 block:
     LBRACE program RBRACE
+        { printf("Block executed.\n"); }
     ;
 
 parameter_list:
