@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 49 "parser.y"
+#line 44 "parser.y"
 
     #include "types.h"
 
@@ -97,15 +97,19 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 53 "parser.y"
+#line 48 "parser.y"
 
     char* string;
     int number;
     char** str_list;
     Statement* stmt;
     Statement* stmt_list;
+    struct {
+        char** list;
+        int count;
+    } param_data;
 
-#line 109 "parser.tab.h"
+#line 113 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

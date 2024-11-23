@@ -1,17 +1,14 @@
-# Makefile para compilar o interpretador ProductivityLang usando Flex e Bison
+# Makefile for compiling ProductivityLang interpreter using Flex and Bison
 
-# Nomes dos arquivos
 LEXER=lexer.l
 PARSER=parser.y
 EXECUTABLE=productivitylang
 TYPES=types.h
 
-# Arquivos gerados
 LEXER_C=lex.yy.c
 PARSER_C=parser.tab.c
 PARSER_H=parser.tab.h
 
-# Compilador e flags
 CC=gcc
 CFLAGS=-g -Wall -Wextra -Wno-unused-function
 
@@ -26,7 +23,6 @@ $(LEXER_C): $(LEXER) $(PARSER_H) $(TYPES)
 $(PARSER_C) $(PARSER_H): $(PARSER) $(TYPES)
 	bison -d $(PARSER)
 
-# Adicione esta regra vazia para informar ao make que types.h existe e não precisa ser construído
 types.h:
 
 clean:

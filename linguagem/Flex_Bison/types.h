@@ -11,9 +11,9 @@ typedef struct Task {
     char* id;
     char* name;
     char* deadline;
-    char* completion_status;  // "done" ou "not done"
+    char* completion_status;  // "done" or "not done"
     char* priority;
-    Attribute* attributes;    // Lista de atributos personalizados
+    Attribute* attributes;    // List of custom attributes
     struct Task* next;
 } Task;
 

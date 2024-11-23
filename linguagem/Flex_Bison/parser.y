@@ -1,29 +1,25 @@
 %{
-/* Código C que será inserido no início de parser.tab.c */
+/* C code section */
 
-/* Definir _XOPEN_SOURCE antes de incluir qualquer header */
-#define _XOPEN_SOURCE 700
+#define _XOPEN_SOURCE 700  /* For strptime */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "types.h"  /* Inclui as definições das estruturas */
+#include "types.h"
 
-/* Declarações necessárias para o parser */
 int yylex(void);
 void yyerror(const char *s);
-extern int yylineno;  /* Número da linha atual */
+extern int yylineno;
 
-/* Variáveis globais para rastrear o contexto */
 int inside_function = 0;
 int inside_block = 0;
 
-/* Variáveis globais */
 Task* task_list = NULL;
 Function* function_list = NULL;
 
-/* Cabeçalho das funções */
+/* Function prototypes */
 Task* create_task(char* id, char* name);
 void add_task(Task* task);
 Task* find_task(char* id);
@@ -35,17 +31,16 @@ void free_task_attributes(Task* task);
 
 void add_function(Function* func);
 Function* find_function(char* name);
-void execute_function(Function* func, char** arguments);
+void execute_function(Function* func, char** arguments, int arg_count);
 
 void execute_show_me(Statement* stmt, char** param_names, char** param_values, int param_count);
 void execute_mark_as_done(Statement* stmt, char** param_names, char** param_values, int param_count);
 void execute_statement(Statement* stmt, char** param_names, char** param_values, int param_count);
 int check_deadline(char* deadline);
 
-/* As implementações das funções serão adicionadas após as regras do Bison */
 %}
 
-/* Inclui as definições das estruturas no parser.tab.h */
+/* Include the types in the parser header */
 %code requires {
     #include "types.h"
 }
@@ -56,6 +51,10 @@ int check_deadline(char* deadline);
     char** str_list;
     Statement* stmt;
     Statement* stmt_list;
+    struct {
+        char** list;
+        int count;
+    } param_data;
 }
 
 %token DEFINE_FUNCTION
@@ -85,36 +84,37 @@ int check_deadline(char* deadline);
 %token SEMICOLON LBRACE RBRACE LPAREN RPAREN COMMA
 
 %type <string> value status optional_else
-%type <str_list> parameter_list parameters argument_list arguments value_list
+%type <param_data> parameter_list parameters argument_list arguments
+%type <str_list> value_list
 %type <stmt_list> func_statements block
 %type <stmt> mark_as_done show_me func_statement
 %type <stmt> define_task set_deadline set_attribute conditional loop
 
 %start program
 
-%debug
+%debug  /* Adicione esta linha */
 
 %%
 
 program:
-          /* vazio */
+          /* empty */
         | program statement
         ;
 
 statement:
-      define_task          {}
-    | set_deadline         {}
-    | set_attribute        {}
-    | mark_as_done         {}
-    | review_all_tasks     {}
-    | show_me              {}
-    | save_tasks           {}
-    | load_tasks           {}
-    | function_definition  {}
-    | run_function         {}
-    | conditional          {}
-    | loop                 {}
-    ;
+          define_task          {}
+        | set_deadline         {}
+        | set_attribute        {}
+        | mark_as_done         {}
+        | review_all_tasks     {}
+        | show_me              {}
+        | save_tasks           {}
+        | load_tasks           {}
+        | function_definition  {}
+        | run_function         {}
+        | conditional          {}
+        | loop                 {}
+        ;
 
 define_task:
     DEFINE_TASK IDENTIFIER AS value SEMICOLON
@@ -184,7 +184,7 @@ set_attribute:
                     if (task->completion_status) free(task->completion_status);
                     task->completion_status = strdup($6);
                 } else {
-                    // Atributos personalizados
+                    // Custom attributes
                     set_task_attribute(task, $2, $6);
                 }
             } else {
@@ -246,9 +246,9 @@ show_me:
         if (inside_function || inside_block) {
             $$ = stmt;
         } else {
-            // Executa imediatamente
+            // Execute immediately
             execute_show_me(stmt, NULL, NULL, 0);
-            // Liberar a memória do statement após a execução
+            // Free memory
             free(stmt->type);
             free(stmt);
             $$ = NULL;
@@ -260,7 +260,7 @@ save_tasks:
     SAVE_TASKS STRING SEMICOLON
     {
         printf("Save tasks to %s\n", $2);
-        // Implementar lógica para salvar tarefas em um arquivo
+        // Implement saving logic here
     }
     ;
 
@@ -268,7 +268,7 @@ load_tasks:
     LOAD_TASKS STRING SEMICOLON
     {
         printf("Load tasks from %s\n", $2);
-        // Implementar lógica para carregar tarefas de um arquivo
+        // Implement loading logic here
     }
     ;
 
@@ -277,12 +277,14 @@ function_definition:
     {
         printf("Define function %s\n", $2);
         inside_function = 1;
+
         Function* new_func = (Function*)malloc(sizeof(Function));
         new_func->name = strdup($2);
-        new_func->parameters = $4;
-        new_func->param_count = $4 ? yylval.number : 0;
+        new_func->parameters = $4.list;
+        new_func->param_count = $4.count;
         new_func->body = $6;
         new_func->next = NULL;
+
         inside_function = 0;
         add_function(new_func);
     }
@@ -294,7 +296,7 @@ run_function:
         printf("Run function %s\n", $2);
         Function* func = find_function($2);
         if (func) {
-            execute_function(func, $4);
+            execute_function(func, $4.list, $4.count);
         } else {
             printf("Error: Function %s not found.\n", $2);
         }
@@ -307,7 +309,7 @@ conditional:
         printf("If there's time left before %s\n", $3);
         Statement* stmt = malloc(sizeof(Statement));
         stmt->type = strdup("conditional");
-        stmt->data = malloc(sizeof(char*) * 3); // Data[0]: deadline, Data[1]: then_block, Data[2]: else_value
+        stmt->data = malloc(sizeof(void*) * 3); // Data[0]: deadline, Data[1]: then_block, Data[2]: else_value
         ((char**)stmt->data)[0] = strdup($3); // Deadline
         ((Statement**)stmt->data)[1] = $4;    // Then block
         ((char**)stmt->data)[2] = $5;         // Else value
@@ -315,10 +317,11 @@ conditional:
         if (inside_function || inside_block) {
             $$ = stmt;
         } else {
-            // Executar imediatamente
+            // Execute immediately
             execute_statement(stmt, NULL, NULL, 0);
-            // Liberar memória
+            // Free memory
             free(stmt->type);
+            free(((char**)stmt->data)[0]);
             free(stmt->data);
             free(stmt);
             $$ = NULL;
@@ -327,7 +330,7 @@ conditional:
     ;
 
 optional_else:
-          /* vazio */
+          /* empty */
           {
               $$ = NULL;
           }
@@ -348,9 +351,9 @@ loop:
           if (inside_function || inside_block) {
               $$ = stmt;
           } else {
-              // Executa imediatamente
+              // Execute immediately
               execute_statement(stmt, NULL, NULL, 0);
-              // Liberar memória
+              // Free memory
               free(stmt->type);
               free(stmt);
               $$ = NULL;
@@ -370,9 +373,9 @@ loop:
           if (inside_function || inside_block) {
               $$ = stmt;
           } else {
-              // Executa imediatamente
+              // Execute immediately
               execute_statement(stmt, NULL, NULL, 0);
-              // Liberar memória
+              // Free memory
               free(times_ptr);
               free(stmt->data);
               free(stmt->type);
@@ -383,10 +386,10 @@ loop:
     ;
 
 parameter_list:
-      /* vazio */
+      /* empty */
       {
-          $$ = NULL;
-          yylval.number = 0;
+          $$.list = NULL;
+          $$.count = 0;
       }
     | parameters
       {
@@ -397,26 +400,26 @@ parameter_list:
 parameters:
     IDENTIFIER
     {
-        $$ = malloc(2 * sizeof(char*));
-        $$[0] = strdup($1);
-        $$[1] = NULL;
-        yylval.number = 1;
+        $$.list = malloc(2 * sizeof(char*));
+        $$.list[0] = strdup($1);
+        $$.list[1] = NULL;
+        $$.count = 1;
     }
-    | parameters COMMA IDENTIFIER
+  | parameters COMMA IDENTIFIER
     {
-        int i = yylval.number;
-        $$ = realloc($1, (i + 2) * sizeof(char*));
-        $$[i] = strdup($3);
-        $$[i + 1] = NULL;
-        yylval.number = i + 1;
+        int i = $1.count;
+        $$.list = realloc($1.list, (i + 2) * sizeof(char*));
+        $$.list[i] = strdup($3);
+        $$.list[i + 1] = NULL;
+        $$.count = i + 1;
     }
-    ;
+  ;
 
 argument_list:
-      /* vazio */
+      /* empty */
       {
-          $$ = NULL;
-          yylval.number = 0;
+          $$.list = NULL;
+          $$.count = 0;
       }
     | arguments
       {
@@ -427,20 +430,20 @@ argument_list:
 arguments:
     value
     {
-        $$ = malloc(2 * sizeof(char*));
-        $$[0] = strdup($1);
-        $$[1] = NULL;
-        yylval.number = 1;
+        $$.list = malloc(2 * sizeof(char*));
+        $$.list[0] = strdup($1);
+        $$.list[1] = NULL;
+        $$.count = 1;
     }
-    | arguments COMMA value
+  | arguments COMMA value
     {
-        int i = yylval.number;
-        $$ = realloc($1, (i + 2) * sizeof(char*));
-        $$[i] = strdup($3);
-        $$[i + 1] = NULL;
-        yylval.number = i + 1;
+        int i = $1.count;
+        $$.list = realloc($1.list, (i + 2) * sizeof(char*));
+        $$.list[i] = strdup($3);
+        $$.list[i + 1] = NULL;
+        $$.count = i + 1;
     }
-    ;
+  ;
 
 value_list:
     value
@@ -449,7 +452,7 @@ value_list:
         $$[0] = strdup($1);
         $$[1] = NULL;
     }
-    | value_list value
+  | value_list value
     {
         int i = 0;
         while ($1[i] != NULL) i++;
@@ -464,7 +467,7 @@ value:
     {
         $$ = strdup($1);
     }
-    | IDENTIFIER
+  | IDENTIFIER
     {
         $$ = strdup($1);
     }
@@ -484,7 +487,6 @@ begin_block:
 end_block:
     RBRACE { inside_block--; }
     ;
-
 
 func_statements:
       func_statement
@@ -517,9 +519,10 @@ func_statement:
     | loop                  { $$ = $1; }
     | conditional           { $$ = $1; }
     ;
+
 %%
 
-/* Implementação das funções auxiliares */
+/* Auxiliary function implementations */
 
 Task* create_task(char* id, char* name) {
     Task* task = malloc(sizeof(Task));
@@ -556,7 +559,7 @@ void review_all_tasks() {
     Task* current = task_list;
     while (current != NULL) {
         printf("%-20s| %-20s| %-15s| %-10s| %-10s| ", current->id, current->name ? current->name : "N/A", current->deadline ? current->deadline : "N/A", current->completion_status ? current->completion_status : "N/A", current->priority ? current->priority : "N/A");
-        // Imprimir atributos personalizados
+        // Print custom attributes
         Attribute* attr = current->attributes;
         while (attr != NULL) {
             printf("%s: \"%s\" ", attr->key, attr->value);
@@ -628,13 +631,17 @@ Function* find_function(char* name) {
     return NULL;
 }
 
-void execute_function(Function* func, char** arguments) {
-    // Mapear parâmetros para argumentos
+void execute_function(Function* func, char** arguments, int arg_count) {
     int param_count = func->param_count;
     char** param_names = func->parameters;
     char** param_values = arguments;
 
-    // Executar statements
+    if (param_count != arg_count) {
+        printf("Error: Function %s expects %d arguments, but %d were provided.\n", func->name, param_count, arg_count);
+        return;
+    }
+
+    // Execute statements
     Statement* stmt = func->body;
     while (stmt != NULL) {
         execute_statement(stmt, param_names, param_values, param_count);
@@ -643,39 +650,45 @@ void execute_function(Function* func, char** arguments) {
 }
 
 void execute_statement(Statement* stmt, char** param_names, char** param_values, int param_count) {
+    if (!stmt || !stmt->type) return;
+
     if (strcmp(stmt->type, "show_me") == 0) {
         execute_show_me(stmt, param_names, param_values, param_count);
     } else if (strcmp(stmt->type, "mark_as_done") == 0) {
         execute_mark_as_done(stmt, param_names, param_values, param_count);
     } else if (strcmp(stmt->type, "loop") == 0) {
-        int times = *(int*)((void**)stmt->data)[0];
-        Statement* block = ((void**)stmt->data)[1];
-        for (int i = 0; i < times; i++) {
-            Statement* inner_stmt = block;
-            while (inner_stmt != NULL) {
-                execute_statement(inner_stmt, param_names, param_values, param_count);
-                inner_stmt = inner_stmt->next;
+        void** data = (void**)stmt->data;
+        int times = *((int*)data[0]);
+        Statement* block = (Statement*)data[1];
+        if (block) {
+            for (int i = 0; i < times; i++) {
+                Statement* inner_stmt = block;
+                while (inner_stmt != NULL) {
+                    execute_statement(inner_stmt, param_names, param_values, param_count);
+                    inner_stmt = inner_stmt->next;
+                }
             }
+        } else {
+            printf("Warning: Loop block is empty.\n");
         }
     } else if (strcmp(stmt->type, "repeat_until_complete") == 0) {
         Statement* block = (Statement*)stmt->data;
         int task_completed = 0;
         while (!task_completed) {
-            // Verificar se alguma tarefa está marcada como "not done"
+            // Check if any task is marked as "not done"
             Task* current = task_list;
-            task_completed = 1; // Assume que todas as tarefas estão completas
+            task_completed = 1; // Assume all tasks are complete
             while (current != NULL) {
                 if (strcmp(current->completion_status, "not done") == 0) {
-                    task_completed = 0; // Encontrou uma tarefa não concluída
+                    task_completed = 0; // Found an incomplete task
                     break;
                 }
                 current = current->next;
             }
             if (task_completed) {
-                break; // Todas as tarefas estão concluídas
+                break; // All tasks are complete
             }
-            // Verificar se o deadline já passou (opcional)
-            // Executar o bloco
+            // Execute the block
             Statement* inner_stmt = block;
             while (inner_stmt != NULL) {
                 execute_statement(inner_stmt, param_names, param_values, param_count);
@@ -688,14 +701,14 @@ void execute_statement(Statement* stmt, char** param_names, char** param_values,
         char* else_value = ((char**)stmt->data)[2];
 
         if (check_deadline(deadline)) {
-            // Ainda há tempo antes do deadline
+            // There's still time before the deadline
             Statement* inner_stmt = then_block;
             while (inner_stmt != NULL) {
                 execute_statement(inner_stmt, param_names, param_values, param_count);
                 inner_stmt = inner_stmt->next;
             }
         } else {
-            // O deadline já passou
+            // The deadline has passed
             if (else_value != NULL) {
                 printf("Otherwise focus on %s\n", else_value);
             }
@@ -734,7 +747,7 @@ void execute_statement(Statement* stmt, char** param_names, char** param_values,
             printf("Error: Task %s not found.\n", id);
         }
     }
-    // Adicionar outros tipos de statements conforme necessário
+    // Add other statement types as needed
 }
 
 void execute_show_me(Statement* stmt, char** param_names, char** param_values, int param_count) {
@@ -742,7 +755,7 @@ void execute_show_me(Statement* stmt, char** param_names, char** param_values, i
     for (int i = 0; values[i] != NULL; i++) {
         char* val = values[i];
         int substituted = 0;
-        // Substituir parâmetros
+        // Substitute parameters
         for (int j = 0; j < param_count; j++) {
             if (strcmp(val, param_names[j]) == 0) {
                 val = param_values[j];
@@ -750,10 +763,10 @@ void execute_show_me(Statement* stmt, char** param_names, char** param_values, i
                 break;
             }
         }
-        // Se não foi substituído, remover as aspas se necessário
+        // Remove quotes if not substituted
         if (!substituted && val[0] == '"' && val[strlen(val) - 1] == '"') {
-            val[strlen(val) - 1] = '\0'; // Remove a última aspas
-            val++; // Avança o ponteiro para ignorar a primeira aspas
+            val[strlen(val) - 1] = '\0'; // Remove the last quote
+            val++; // Skip the first quote
         }
         printf("%s", val);
     }
@@ -762,14 +775,14 @@ void execute_show_me(Statement* stmt, char** param_names, char** param_values, i
 
 void execute_mark_as_done(Statement* stmt, char** param_names, char** param_values, int param_count) {
     char* task_name = (char*)stmt->data;
-    // Substituir parâmetros
+    // Substitute parameters
     for (int j = 0; j < param_count; j++) {
         if (strcmp(task_name, param_names[j]) == 0) {
             task_name = param_values[j];
             break;
         }
     }
-    // Marcar a tarefa como concluída
+    // Mark the task as done
     Task* task = find_task(task_name);
     if (task) {
         if (task->completion_status) free(task->completion_status);
@@ -780,7 +793,7 @@ void execute_mark_as_done(Statement* stmt, char** param_names, char** param_valu
 }
 
 int check_deadline(char* deadline_str) {
-    // Remove as aspas da string
+    // Remove quotes from the string
     if (deadline_str[0] == '"' && deadline_str[strlen(deadline_str) - 1] == '"') {
         deadline_str[strlen(deadline_str) - 1] = '\0';
         deadline_str++;
@@ -791,31 +804,31 @@ int check_deadline(char* deadline_str) {
     strptime(deadline_str, "%Y-%m-%d", &deadline_tm);
     time_t deadline_time = mktime(&deadline_tm);
 
-    // Retorna 1 se ainda há tempo, 0 se o deadline passou
+    // Return 1 if there's still time, 0 if the deadline has passed
     return difftime(deadline_time, now) > 0;
 }
 
 int main(int argc, char* argv[]) {
     extern FILE* yyin;
-    yydebug = 0;  // Defina como 1 para ativar o modo de depuração
+    yydebug = 0;  // Set to 1 to enable debugging
 
     if (argc > 1) {
         yyin = fopen(argv[1], "r");
         if (!yyin) {
-            perror("Erro ao abrir o arquivo");
+            perror("Error opening file");
             return EXIT_FAILURE;
         }
     }
     if (yyparse() == 0) {
         printf("Parsing concluído com sucesso.\n");
     } else {
-        printf("Parsing falhou.\n");
+        printf("Parsing failed.\n");
     }
-    free_tasks();  // Limpa a memória alocada para as tarefas
-    // Liberar funções e statements se necessário
+    free_tasks();  // Clean up allocated memory for tasks
+    // Free functions and statements if necessary
     return EXIT_SUCCESS;
 }
 
 void yyerror(const char* s) {
-    fprintf(stderr, "Erro de sintaxe na linha %d: %s\n", yylineno, s);
+    fprintf(stderr, "Syntax error at line %d: %s\n", yylineno, s);
 }

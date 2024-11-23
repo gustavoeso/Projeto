@@ -1,15 +1,16 @@
 %{
-#include "parser.tab.h"  /* Inclui o header gerado pelo Bison */
+#include "parser.tab.h"
 #include <string.h>
 #include <stdlib.h>
-#include "types.h"       /* Inclui as definições das estruturas */
+#include "types.h"
 %}
 
 %option noyywrap
 %option yylineno
 
 %%
-[ \t\r\n]+          ;  /* Ignora espaços em branco e quebras de linha */
+
+[ \t\r\n]+          ;  /* Ignore whitespace */
 
 "Define function"    { return DEFINE_FUNCTION; }
 "Define a task"      { return DEFINE_TASK; }
@@ -53,6 +54,6 @@
                         return NUMBER;
                     }
 
-.                    { /* Ignora caracteres não reconhecidos */ }
+.                    { /* Ignore unrecognized characters */ }
 
 %%

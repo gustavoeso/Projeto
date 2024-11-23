@@ -69,31 +69,27 @@
 /* First part of user prologue.  */
 #line 1 "parser.y"
 
-/* Código C que será inserido no início de parser.tab.c */
+/* C code section */
 
-/* Definir _XOPEN_SOURCE antes de incluir qualquer header */
-#define _XOPEN_SOURCE 700
+#define _XOPEN_SOURCE 700  /* For strptime */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "types.h"  /* Inclui as definições das estruturas */
+#include "types.h"
 
-/* Declarações necessárias para o parser */
 int yylex(void);
 void yyerror(const char *s);
-extern int yylineno;  /* Número da linha atual */
+extern int yylineno;
 
-/* Variáveis globais para rastrear o contexto */
 int inside_function = 0;
 int inside_block = 0;
 
-/* Variáveis globais */
 Task* task_list = NULL;
 Function* function_list = NULL;
 
-/* Cabeçalho das funções */
+/* Function prototypes */
 Task* create_task(char* id, char* name);
 void add_task(Task* task);
 Task* find_task(char* id);
@@ -105,16 +101,15 @@ void free_task_attributes(Task* task);
 
 void add_function(Function* func);
 Function* find_function(char* name);
-void execute_function(Function* func, char** arguments);
+void execute_function(Function* func, char** arguments, int arg_count);
 
 void execute_show_me(Statement* stmt, char** param_names, char** param_values, int param_count);
 void execute_mark_as_done(Statement* stmt, char** param_names, char** param_values, int param_count);
 void execute_statement(Statement* stmt, char** param_names, char** param_values, int param_count);
 int check_deadline(char* deadline);
 
-/* As implementações das funções serão adicionadas após as regras do Bison */
 
-#line 118 "parser.tab.c"
+#line 113 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -592,10 +587,10 @@ static const yytype_int16 yyrline[] =
 {
        0,    99,    99,   101,   105,   106,   107,   108,   109,   110,
      111,   112,   113,   114,   115,   116,   120,   140,   165,   199,
-     222,   226,   233,   240,   260,   268,   276,   292,   305,   331,
-     334,   341,   359,   387,   391,   398,   405,   417,   421,   428,
-     435,   446,   452,   463,   467,   474,   481,   485,   490,   494,
-     512,   513,   514,   515,   516,   517,   518
+     222,   226,   233,   240,   260,   268,   276,   294,   307,   334,
+     337,   344,   362,   390,   394,   401,   408,   420,   424,   431,
+     438,   449,   455,   466,   470,   477,   484,   488,   492,   496,
+     514,   515,   516,   517,   518,   519,   520
 };
 #endif
 
@@ -1226,74 +1221,74 @@ yyreduce:
     {
   case 4: /* statement: define_task  */
 #line 105 "parser.y"
-                           {}
-#line 1231 "parser.tab.c"
+                               {}
+#line 1226 "parser.tab.c"
     break;
 
   case 5: /* statement: set_deadline  */
 #line 106 "parser.y"
-                           {}
-#line 1237 "parser.tab.c"
+                               {}
+#line 1232 "parser.tab.c"
     break;
 
   case 6: /* statement: set_attribute  */
 #line 107 "parser.y"
-                           {}
-#line 1243 "parser.tab.c"
+                               {}
+#line 1238 "parser.tab.c"
     break;
 
   case 7: /* statement: mark_as_done  */
 #line 108 "parser.y"
-                           {}
-#line 1249 "parser.tab.c"
+                               {}
+#line 1244 "parser.tab.c"
     break;
 
   case 8: /* statement: review_all_tasks  */
 #line 109 "parser.y"
-                           {}
-#line 1255 "parser.tab.c"
+                               {}
+#line 1250 "parser.tab.c"
     break;
 
   case 9: /* statement: show_me  */
 #line 110 "parser.y"
-                           {}
-#line 1261 "parser.tab.c"
+                               {}
+#line 1256 "parser.tab.c"
     break;
 
   case 10: /* statement: save_tasks  */
 #line 111 "parser.y"
-                           {}
-#line 1267 "parser.tab.c"
+                               {}
+#line 1262 "parser.tab.c"
     break;
 
   case 11: /* statement: load_tasks  */
 #line 112 "parser.y"
-                           {}
-#line 1273 "parser.tab.c"
+                               {}
+#line 1268 "parser.tab.c"
     break;
 
   case 12: /* statement: function_definition  */
 #line 113 "parser.y"
-                           {}
-#line 1279 "parser.tab.c"
+                               {}
+#line 1274 "parser.tab.c"
     break;
 
   case 13: /* statement: run_function  */
 #line 114 "parser.y"
-                           {}
-#line 1285 "parser.tab.c"
+                               {}
+#line 1280 "parser.tab.c"
     break;
 
   case 14: /* statement: conditional  */
 #line 115 "parser.y"
-                           {}
-#line 1291 "parser.tab.c"
+                               {}
+#line 1286 "parser.tab.c"
     break;
 
   case 15: /* statement: loop  */
 #line 116 "parser.y"
-                           {}
-#line 1297 "parser.tab.c"
+                               {}
+#line 1292 "parser.tab.c"
     break;
 
   case 16: /* define_task: DEFINE_TASK IDENTIFIER AS value SEMICOLON  */
@@ -1314,7 +1309,7 @@ yyreduce:
             (yyval.stmt) = NULL;
         }
     }
-#line 1318 "parser.tab.c"
+#line 1313 "parser.tab.c"
     break;
 
   case 17: /* set_deadline: SET_DEADLINE FOR_TASK IDENTIFIER AS value SEMICOLON  */
@@ -1340,7 +1335,7 @@ yyreduce:
             (yyval.stmt) = NULL;
         }
     }
-#line 1344 "parser.tab.c"
+#line 1339 "parser.tab.c"
     break;
 
   case 18: /* set_attribute: SET_ATTRIBUTE IDENTIFIER FOR_TASK IDENTIFIER AS value SEMICOLON  */
@@ -1366,7 +1361,7 @@ yyreduce:
                     if (task->completion_status) free(task->completion_status);
                     task->completion_status = strdup((yyvsp[-1].string));
                 } else {
-                    // Atributos personalizados
+                    // Custom attributes
                     set_task_attribute(task, (yyvsp[-5].string), (yyvsp[-1].string));
                 }
             } else {
@@ -1375,7 +1370,7 @@ yyreduce:
             (yyval.stmt) = NULL;
         }
     }
-#line 1379 "parser.tab.c"
+#line 1374 "parser.tab.c"
     break;
 
   case 19: /* mark_as_done: MARK_AS_DONE IDENTIFIER status SEMICOLON  */
@@ -1399,7 +1394,7 @@ yyreduce:
             (yyval.stmt) = NULL;
         }
     }
-#line 1403 "parser.tab.c"
+#line 1398 "parser.tab.c"
     break;
 
   case 20: /* status: AS_DONE  */
@@ -1407,7 +1402,7 @@ yyreduce:
       {
           (yyval.string) = strdup("done");
       }
-#line 1411 "parser.tab.c"
+#line 1406 "parser.tab.c"
     break;
 
   case 21: /* status: AS_NOT_DONE  */
@@ -1415,7 +1410,7 @@ yyreduce:
       {
           (yyval.string) = strdup("not done");
       }
-#line 1419 "parser.tab.c"
+#line 1414 "parser.tab.c"
     break;
 
   case 22: /* review_all_tasks: REVIEW_ALL_TASKS SEMICOLON  */
@@ -1423,7 +1418,7 @@ yyreduce:
     {
         review_all_tasks();
     }
-#line 1427 "parser.tab.c"
+#line 1422 "parser.tab.c"
     break;
 
   case 23: /* show_me: SHOW_ME value_list SEMICOLON  */
@@ -1436,33 +1431,33 @@ yyreduce:
         if (inside_function || inside_block) {
             (yyval.stmt) = stmt;
         } else {
-            // Executa imediatamente
+            // Execute immediately
             execute_show_me(stmt, NULL, NULL, 0);
-            // Liberar a memória do statement após a execução
+            // Free memory
             free(stmt->type);
             free(stmt);
             (yyval.stmt) = NULL;
         }
     }
-#line 1448 "parser.tab.c"
+#line 1443 "parser.tab.c"
     break;
 
   case 24: /* save_tasks: SAVE_TASKS STRING SEMICOLON  */
 #line 261 "parser.y"
     {
         printf("Save tasks to %s\n", (yyvsp[-1].string));
-        // Implementar lógica para salvar tarefas em um arquivo
+        // Implement saving logic here
     }
-#line 1457 "parser.tab.c"
+#line 1452 "parser.tab.c"
     break;
 
   case 25: /* load_tasks: LOAD_TASKS STRING SEMICOLON  */
 #line 269 "parser.y"
     {
         printf("Load tasks from %s\n", (yyvsp[-1].string));
-        // Implementar lógica para carregar tarefas de um arquivo
+        // Implement loading logic here
     }
-#line 1466 "parser.tab.c"
+#line 1461 "parser.tab.c"
     break;
 
   case 26: /* function_definition: DEFINE_FUNCTION IDENTIFIER LPAREN parameter_list RPAREN block  */
@@ -1470,39 +1465,41 @@ yyreduce:
     {
         printf("Define function %s\n", (yyvsp[-4].string));
         inside_function = 1;
+
         Function* new_func = (Function*)malloc(sizeof(Function));
         new_func->name = strdup((yyvsp[-4].string));
-        new_func->parameters = (yyvsp[-2].str_list);
-        new_func->param_count = (yyvsp[-2].str_list) ? yylval.number : 0;
+        new_func->parameters = (yyvsp[-2].param_data).list;
+        new_func->param_count = (yyvsp[-2].param_data).count;
         new_func->body = (yyvsp[0].stmt_list);
         new_func->next = NULL;
+
         inside_function = 0;
         add_function(new_func);
     }
-#line 1483 "parser.tab.c"
+#line 1480 "parser.tab.c"
     break;
 
   case 27: /* run_function: RUN_FUNCTION IDENTIFIER LPAREN argument_list RPAREN SEMICOLON  */
-#line 293 "parser.y"
+#line 295 "parser.y"
     {
         printf("Run function %s\n", (yyvsp[-4].string));
         Function* func = find_function((yyvsp[-4].string));
         if (func) {
-            execute_function(func, (yyvsp[-2].str_list));
+            execute_function(func, (yyvsp[-2].param_data).list, (yyvsp[-2].param_data).count);
         } else {
             printf("Error: Function %s not found.\n", (yyvsp[-4].string));
         }
     }
-#line 1497 "parser.tab.c"
+#line 1494 "parser.tab.c"
     break;
 
   case 28: /* conditional: IF_TIME_LEFT BEFORE value block optional_else  */
-#line 306 "parser.y"
+#line 308 "parser.y"
     {
         printf("If there's time left before %s\n", (yyvsp[-2].string));
         Statement* stmt = malloc(sizeof(Statement));
         stmt->type = strdup("conditional");
-        stmt->data = malloc(sizeof(char*) * 3); // Data[0]: deadline, Data[1]: then_block, Data[2]: else_value
+        stmt->data = malloc(sizeof(void*) * 3); // Data[0]: deadline, Data[1]: then_block, Data[2]: else_value
         ((char**)stmt->data)[0] = strdup((yyvsp[-2].string)); // Deadline
         ((Statement**)stmt->data)[1] = (yyvsp[-1].stmt_list);    // Then block
         ((char**)stmt->data)[2] = (yyvsp[0].string);         // Else value
@@ -1510,36 +1507,37 @@ yyreduce:
         if (inside_function || inside_block) {
             (yyval.stmt) = stmt;
         } else {
-            // Executar imediatamente
+            // Execute immediately
             execute_statement(stmt, NULL, NULL, 0);
-            // Liberar memória
+            // Free memory
             free(stmt->type);
+            free(((char**)stmt->data)[0]);
             free(stmt->data);
             free(stmt);
             (yyval.stmt) = NULL;
         }
     }
-#line 1523 "parser.tab.c"
+#line 1521 "parser.tab.c"
     break;
 
   case 29: /* optional_else: %empty  */
-#line 331 "parser.y"
+#line 334 "parser.y"
           {
               (yyval.string) = NULL;
           }
-#line 1531 "parser.tab.c"
+#line 1529 "parser.tab.c"
     break;
 
   case 30: /* optional_else: OTHERWISE_FOCUS value SEMICOLON  */
-#line 335 "parser.y"
+#line 338 "parser.y"
           {
               (yyval.string) = strdup((yyvsp[-1].string));
           }
-#line 1539 "parser.tab.c"
+#line 1537 "parser.tab.c"
     break;
 
   case 31: /* loop: REPEAT_UNTIL_COMPLETE block  */
-#line 342 "parser.y"
+#line 345 "parser.y"
       {
           printf("Repeat until complete\n");
           Statement* stmt = malloc(sizeof(Statement));
@@ -1549,19 +1547,19 @@ yyreduce:
           if (inside_function || inside_block) {
               (yyval.stmt) = stmt;
           } else {
-              // Executa imediatamente
+              // Execute immediately
               execute_statement(stmt, NULL, NULL, 0);
-              // Liberar memória
+              // Free memory
               free(stmt->type);
               free(stmt);
               (yyval.stmt) = NULL;
           }
       }
-#line 1561 "parser.tab.c"
+#line 1559 "parser.tab.c"
     break;
 
   case 32: /* loop: DO_IT_AGAIN NUMBER TIMES block  */
-#line 360 "parser.y"
+#line 363 "parser.y"
       {
           printf("Do it again %d times\n", (yyvsp[-2].number));
           Statement* stmt = malloc(sizeof(Statement));
@@ -1575,9 +1573,9 @@ yyreduce:
           if (inside_function || inside_block) {
               (yyval.stmt) = stmt;
           } else {
-              // Executa imediatamente
+              // Execute immediately
               execute_statement(stmt, NULL, NULL, 0);
-              // Liberar memória
+              // Free memory
               free(times_ptr);
               free(stmt->data);
               free(stmt->type);
@@ -1585,101 +1583,101 @@ yyreduce:
               (yyval.stmt) = NULL;
           }
       }
-#line 1589 "parser.tab.c"
+#line 1587 "parser.tab.c"
     break;
 
   case 33: /* parameter_list: %empty  */
-#line 387 "parser.y"
+#line 390 "parser.y"
       {
-          (yyval.str_list) = NULL;
-          yylval.number = 0;
+          (yyval.param_data).list = NULL;
+          (yyval.param_data).count = 0;
       }
-#line 1598 "parser.tab.c"
+#line 1596 "parser.tab.c"
     break;
 
   case 34: /* parameter_list: parameters  */
-#line 392 "parser.y"
+#line 395 "parser.y"
       {
-          (yyval.str_list) = (yyvsp[0].str_list);
+          (yyval.param_data) = (yyvsp[0].param_data);
       }
-#line 1606 "parser.tab.c"
+#line 1604 "parser.tab.c"
     break;
 
   case 35: /* parameters: IDENTIFIER  */
-#line 399 "parser.y"
+#line 402 "parser.y"
     {
-        (yyval.str_list) = malloc(2 * sizeof(char*));
-        (yyval.str_list)[0] = strdup((yyvsp[0].string));
-        (yyval.str_list)[1] = NULL;
-        yylval.number = 1;
+        (yyval.param_data).list = malloc(2 * sizeof(char*));
+        (yyval.param_data).list[0] = strdup((yyvsp[0].string));
+        (yyval.param_data).list[1] = NULL;
+        (yyval.param_data).count = 1;
     }
-#line 1617 "parser.tab.c"
+#line 1615 "parser.tab.c"
     break;
 
   case 36: /* parameters: parameters COMMA IDENTIFIER  */
-#line 406 "parser.y"
+#line 409 "parser.y"
     {
-        int i = yylval.number;
-        (yyval.str_list) = realloc((yyvsp[-2].str_list), (i + 2) * sizeof(char*));
-        (yyval.str_list)[i] = strdup((yyvsp[0].string));
-        (yyval.str_list)[i + 1] = NULL;
-        yylval.number = i + 1;
+        int i = (yyvsp[-2].param_data).count;
+        (yyval.param_data).list = realloc((yyvsp[-2].param_data).list, (i + 2) * sizeof(char*));
+        (yyval.param_data).list[i] = strdup((yyvsp[0].string));
+        (yyval.param_data).list[i + 1] = NULL;
+        (yyval.param_data).count = i + 1;
     }
-#line 1629 "parser.tab.c"
+#line 1627 "parser.tab.c"
     break;
 
   case 37: /* argument_list: %empty  */
-#line 417 "parser.y"
+#line 420 "parser.y"
       {
-          (yyval.str_list) = NULL;
-          yylval.number = 0;
+          (yyval.param_data).list = NULL;
+          (yyval.param_data).count = 0;
       }
-#line 1638 "parser.tab.c"
+#line 1636 "parser.tab.c"
     break;
 
   case 38: /* argument_list: arguments  */
-#line 422 "parser.y"
+#line 425 "parser.y"
       {
-          (yyval.str_list) = (yyvsp[0].str_list);
+          (yyval.param_data) = (yyvsp[0].param_data);
       }
-#line 1646 "parser.tab.c"
+#line 1644 "parser.tab.c"
     break;
 
   case 39: /* arguments: value  */
-#line 429 "parser.y"
+#line 432 "parser.y"
     {
-        (yyval.str_list) = malloc(2 * sizeof(char*));
-        (yyval.str_list)[0] = strdup((yyvsp[0].string));
-        (yyval.str_list)[1] = NULL;
-        yylval.number = 1;
+        (yyval.param_data).list = malloc(2 * sizeof(char*));
+        (yyval.param_data).list[0] = strdup((yyvsp[0].string));
+        (yyval.param_data).list[1] = NULL;
+        (yyval.param_data).count = 1;
     }
-#line 1657 "parser.tab.c"
+#line 1655 "parser.tab.c"
     break;
 
   case 40: /* arguments: arguments COMMA value  */
-#line 436 "parser.y"
+#line 439 "parser.y"
     {
-        int i = yylval.number;
-        (yyval.str_list) = realloc((yyvsp[-2].str_list), (i + 2) * sizeof(char*));
-        (yyval.str_list)[i] = strdup((yyvsp[0].string));
-        (yyval.str_list)[i + 1] = NULL;
-        yylval.number = i + 1;
+        int i = (yyvsp[-2].param_data).count;
+        (yyval.param_data).list = realloc((yyvsp[-2].param_data).list, (i + 2) * sizeof(char*));
+        (yyval.param_data).list[i] = strdup((yyvsp[0].string));
+        (yyval.param_data).list[i + 1] = NULL;
+        (yyval.param_data).count = i + 1;
     }
-#line 1669 "parser.tab.c"
+#line 1667 "parser.tab.c"
     break;
 
   case 41: /* value_list: value  */
-#line 447 "parser.y"
+#line 450 "parser.y"
     {
         (yyval.str_list) = malloc(2 * sizeof(char*));
         (yyval.str_list)[0] = strdup((yyvsp[0].string));
         (yyval.str_list)[1] = NULL;
     }
-#line 1679 "parser.tab.c"
+#line 1677 "parser.tab.c"
     break;
 
   case 42: /* value_list: value_list value  */
-#line 453 "parser.y"
+#line 456 "parser.y"
     {
         int i = 0;
         while ((yyvsp[-1].str_list)[i] != NULL) i++;
@@ -1687,55 +1685,55 @@ yyreduce:
         (yyval.str_list)[i] = strdup((yyvsp[0].string));
         (yyval.str_list)[i + 1] = NULL;
     }
-#line 1691 "parser.tab.c"
+#line 1689 "parser.tab.c"
     break;
 
   case 43: /* value: STRING  */
-#line 464 "parser.y"
+#line 467 "parser.y"
     {
         (yyval.string) = strdup((yyvsp[0].string));
     }
-#line 1699 "parser.tab.c"
+#line 1697 "parser.tab.c"
     break;
 
   case 44: /* value: IDENTIFIER  */
-#line 468 "parser.y"
+#line 471 "parser.y"
     {
         (yyval.string) = strdup((yyvsp[0].string));
     }
-#line 1707 "parser.tab.c"
+#line 1705 "parser.tab.c"
     break;
 
   case 45: /* block: begin_block func_statements end_block  */
-#line 475 "parser.y"
+#line 478 "parser.y"
     {
         (yyval.stmt_list) = (yyvsp[-1].stmt_list);
     }
-#line 1715 "parser.tab.c"
+#line 1713 "parser.tab.c"
     break;
 
   case 46: /* begin_block: LBRACE  */
-#line 481 "parser.y"
+#line 484 "parser.y"
            { inside_block++; }
-#line 1721 "parser.tab.c"
+#line 1719 "parser.tab.c"
     break;
 
   case 47: /* end_block: RBRACE  */
-#line 485 "parser.y"
+#line 488 "parser.y"
            { inside_block--; }
-#line 1727 "parser.tab.c"
+#line 1725 "parser.tab.c"
     break;
 
   case 48: /* func_statements: func_statement  */
-#line 491 "parser.y"
+#line 493 "parser.y"
         {
             (yyval.stmt_list) = (yyvsp[0].stmt);
         }
-#line 1735 "parser.tab.c"
+#line 1733 "parser.tab.c"
     break;
 
   case 49: /* func_statements: func_statements func_statement  */
-#line 495 "parser.y"
+#line 497 "parser.y"
         {
             if ((yyvsp[-1].stmt_list) == NULL) {
                 (yyval.stmt_list) = (yyvsp[0].stmt);
@@ -1750,53 +1748,53 @@ yyreduce:
                 (yyval.stmt_list) = (yyvsp[-1].stmt_list);
             }
         }
-#line 1754 "parser.tab.c"
+#line 1752 "parser.tab.c"
     break;
 
   case 50: /* func_statement: mark_as_done  */
-#line 512 "parser.y"
+#line 514 "parser.y"
                             { (yyval.stmt) = (yyvsp[0].stmt); }
-#line 1760 "parser.tab.c"
+#line 1758 "parser.tab.c"
     break;
 
   case 51: /* func_statement: show_me  */
-#line 513 "parser.y"
+#line 515 "parser.y"
                             { (yyval.stmt) = (yyvsp[0].stmt); }
-#line 1766 "parser.tab.c"
+#line 1764 "parser.tab.c"
     break;
 
   case 52: /* func_statement: define_task  */
-#line 514 "parser.y"
+#line 516 "parser.y"
                             { (yyval.stmt) = (yyvsp[0].stmt); }
-#line 1772 "parser.tab.c"
+#line 1770 "parser.tab.c"
     break;
 
   case 53: /* func_statement: set_deadline  */
-#line 515 "parser.y"
+#line 517 "parser.y"
                             { (yyval.stmt) = (yyvsp[0].stmt); }
-#line 1778 "parser.tab.c"
+#line 1776 "parser.tab.c"
     break;
 
   case 54: /* func_statement: set_attribute  */
-#line 516 "parser.y"
+#line 518 "parser.y"
                             { (yyval.stmt) = (yyvsp[0].stmt); }
-#line 1784 "parser.tab.c"
+#line 1782 "parser.tab.c"
     break;
 
   case 55: /* func_statement: loop  */
-#line 517 "parser.y"
+#line 519 "parser.y"
                             { (yyval.stmt) = (yyvsp[0].stmt); }
-#line 1790 "parser.tab.c"
+#line 1788 "parser.tab.c"
     break;
 
   case 56: /* func_statement: conditional  */
-#line 518 "parser.y"
+#line 520 "parser.y"
                             { (yyval.stmt) = (yyvsp[0].stmt); }
-#line 1796 "parser.tab.c"
+#line 1794 "parser.tab.c"
     break;
 
 
-#line 1800 "parser.tab.c"
+#line 1798 "parser.tab.c"
 
       default: break;
     }
@@ -1989,10 +1987,10 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 520 "parser.y"
+#line 523 "parser.y"
 
 
-/* Implementação das funções auxiliares */
+/* Auxiliary function implementations */
 
 Task* create_task(char* id, char* name) {
     Task* task = malloc(sizeof(Task));
@@ -2029,7 +2027,7 @@ void review_all_tasks() {
     Task* current = task_list;
     while (current != NULL) {
         printf("%-20s| %-20s| %-15s| %-10s| %-10s| ", current->id, current->name ? current->name : "N/A", current->deadline ? current->deadline : "N/A", current->completion_status ? current->completion_status : "N/A", current->priority ? current->priority : "N/A");
-        // Imprimir atributos personalizados
+        // Print custom attributes
         Attribute* attr = current->attributes;
         while (attr != NULL) {
             printf("%s: \"%s\" ", attr->key, attr->value);
@@ -2101,13 +2099,17 @@ Function* find_function(char* name) {
     return NULL;
 }
 
-void execute_function(Function* func, char** arguments) {
-    // Mapear parâmetros para argumentos
+void execute_function(Function* func, char** arguments, int arg_count) {
     int param_count = func->param_count;
     char** param_names = func->parameters;
     char** param_values = arguments;
 
-    // Executar statements
+    if (param_count != arg_count) {
+        printf("Error: Function %s expects %d arguments, but %d were provided.\n", func->name, param_count, arg_count);
+        return;
+    }
+
+    // Execute statements
     Statement* stmt = func->body;
     while (stmt != NULL) {
         execute_statement(stmt, param_names, param_values, param_count);
@@ -2116,39 +2118,45 @@ void execute_function(Function* func, char** arguments) {
 }
 
 void execute_statement(Statement* stmt, char** param_names, char** param_values, int param_count) {
+    if (!stmt || !stmt->type) return;
+
     if (strcmp(stmt->type, "show_me") == 0) {
         execute_show_me(stmt, param_names, param_values, param_count);
     } else if (strcmp(stmt->type, "mark_as_done") == 0) {
         execute_mark_as_done(stmt, param_names, param_values, param_count);
     } else if (strcmp(stmt->type, "loop") == 0) {
-        int times = *(int*)((void**)stmt->data)[0];
-        Statement* block = ((void**)stmt->data)[1];
-        for (int i = 0; i < times; i++) {
-            Statement* inner_stmt = block;
-            while (inner_stmt != NULL) {
-                execute_statement(inner_stmt, param_names, param_values, param_count);
-                inner_stmt = inner_stmt->next;
+        void** data = (void**)stmt->data;
+        int times = *((int*)data[0]);
+        Statement* block = (Statement*)data[1];
+        if (block) {
+            for (int i = 0; i < times; i++) {
+                Statement* inner_stmt = block;
+                while (inner_stmt != NULL) {
+                    execute_statement(inner_stmt, param_names, param_values, param_count);
+                    inner_stmt = inner_stmt->next;
+                }
             }
+        } else {
+            printf("Warning: Loop block is empty.\n");
         }
     } else if (strcmp(stmt->type, "repeat_until_complete") == 0) {
         Statement* block = (Statement*)stmt->data;
         int task_completed = 0;
         while (!task_completed) {
-            // Verificar se alguma tarefa está marcada como "not done"
+            // Check if any task is marked as "not done"
             Task* current = task_list;
-            task_completed = 1; // Assume que todas as tarefas estão completas
+            task_completed = 1; // Assume all tasks are complete
             while (current != NULL) {
                 if (strcmp(current->completion_status, "not done") == 0) {
-                    task_completed = 0; // Encontrou uma tarefa não concluída
+                    task_completed = 0; // Found an incomplete task
                     break;
                 }
                 current = current->next;
             }
             if (task_completed) {
-                break; // Todas as tarefas estão concluídas
+                break; // All tasks are complete
             }
-            // Verificar se o deadline já passou (opcional)
-            // Executar o bloco
+            // Execute the block
             Statement* inner_stmt = block;
             while (inner_stmt != NULL) {
                 execute_statement(inner_stmt, param_names, param_values, param_count);
@@ -2161,14 +2169,14 @@ void execute_statement(Statement* stmt, char** param_names, char** param_values,
         char* else_value = ((char**)stmt->data)[2];
 
         if (check_deadline(deadline)) {
-            // Ainda há tempo antes do deadline
+            // There's still time before the deadline
             Statement* inner_stmt = then_block;
             while (inner_stmt != NULL) {
                 execute_statement(inner_stmt, param_names, param_values, param_count);
                 inner_stmt = inner_stmt->next;
             }
         } else {
-            // O deadline já passou
+            // The deadline has passed
             if (else_value != NULL) {
                 printf("Otherwise focus on %s\n", else_value);
             }
@@ -2207,7 +2215,7 @@ void execute_statement(Statement* stmt, char** param_names, char** param_values,
             printf("Error: Task %s not found.\n", id);
         }
     }
-    // Adicionar outros tipos de statements conforme necessário
+    // Add other statement types as needed
 }
 
 void execute_show_me(Statement* stmt, char** param_names, char** param_values, int param_count) {
@@ -2215,7 +2223,7 @@ void execute_show_me(Statement* stmt, char** param_names, char** param_values, i
     for (int i = 0; values[i] != NULL; i++) {
         char* val = values[i];
         int substituted = 0;
-        // Substituir parâmetros
+        // Substitute parameters
         for (int j = 0; j < param_count; j++) {
             if (strcmp(val, param_names[j]) == 0) {
                 val = param_values[j];
@@ -2223,10 +2231,10 @@ void execute_show_me(Statement* stmt, char** param_names, char** param_values, i
                 break;
             }
         }
-        // Se não foi substituído, remover as aspas se necessário
+        // Remove quotes if not substituted
         if (!substituted && val[0] == '"' && val[strlen(val) - 1] == '"') {
-            val[strlen(val) - 1] = '\0'; // Remove a última aspas
-            val++; // Avança o ponteiro para ignorar a primeira aspas
+            val[strlen(val) - 1] = '\0'; // Remove the last quote
+            val++; // Skip the first quote
         }
         printf("%s", val);
     }
@@ -2235,14 +2243,14 @@ void execute_show_me(Statement* stmt, char** param_names, char** param_values, i
 
 void execute_mark_as_done(Statement* stmt, char** param_names, char** param_values, int param_count) {
     char* task_name = (char*)stmt->data;
-    // Substituir parâmetros
+    // Substitute parameters
     for (int j = 0; j < param_count; j++) {
         if (strcmp(task_name, param_names[j]) == 0) {
             task_name = param_values[j];
             break;
         }
     }
-    // Marcar a tarefa como concluída
+    // Mark the task as done
     Task* task = find_task(task_name);
     if (task) {
         if (task->completion_status) free(task->completion_status);
@@ -2253,7 +2261,7 @@ void execute_mark_as_done(Statement* stmt, char** param_names, char** param_valu
 }
 
 int check_deadline(char* deadline_str) {
-    // Remove as aspas da string
+    // Remove quotes from the string
     if (deadline_str[0] == '"' && deadline_str[strlen(deadline_str) - 1] == '"') {
         deadline_str[strlen(deadline_str) - 1] = '\0';
         deadline_str++;
@@ -2264,31 +2272,31 @@ int check_deadline(char* deadline_str) {
     strptime(deadline_str, "%Y-%m-%d", &deadline_tm);
     time_t deadline_time = mktime(&deadline_tm);
 
-    // Retorna 1 se ainda há tempo, 0 se o deadline passou
+    // Return 1 if there's still time, 0 if the deadline has passed
     return difftime(deadline_time, now) > 0;
 }
 
 int main(int argc, char* argv[]) {
     extern FILE* yyin;
-    yydebug = 0;  // Defina como 1 para ativar o modo de depuração
+    yydebug = 0;  // Set to 1 to enable debugging
 
     if (argc > 1) {
         yyin = fopen(argv[1], "r");
         if (!yyin) {
-            perror("Erro ao abrir o arquivo");
+            perror("Error opening file");
             return EXIT_FAILURE;
         }
     }
     if (yyparse() == 0) {
         printf("Parsing concluído com sucesso.\n");
     } else {
-        printf("Parsing falhou.\n");
+        printf("Parsing failed.\n");
     }
-    free_tasks();  // Limpa a memória alocada para as tarefas
-    // Liberar funções e statements se necessário
+    free_tasks();  // Clean up allocated memory for tasks
+    // Free functions and statements if necessary
     return EXIT_SUCCESS;
 }
 
 void yyerror(const char* s) {
-    fprintf(stderr, "Erro de sintaxe na linha %d: %s\n", yylineno, s);
+    fprintf(stderr, "Syntax error at line %d: %s\n", yylineno, s);
 }
