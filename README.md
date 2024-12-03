@@ -9,7 +9,7 @@
 Abaixo está a gramática formal da linguagem ProductivityLang, definida em EBNF (Extended Backus-Naur Form). Esta gramática descreve todas as construções permitidas na linguagem.
 
 ```ebnf
-program         = { statement } ;
+~program         = { statement } ;
 
 statement       = define_task
                 | set_deadline
@@ -19,10 +19,10 @@ statement       = define_task
                 | show_me
                 | save_tasks
                 | load_tasks
-                | conditional
-                | loop
                 | function_definition
-                | run_function ;
+                | run_function
+                | conditional
+                | loop ;
 
 identifier      = letter , { letter | digit | "_" } ;
 string          = '"' , { character } , '"' ;
@@ -33,18 +33,24 @@ set_deadline    = "Set deadline for" , identifier , "as" , ( string | identifier
 set_attribute   = "Set" , identifier , "for" , identifier , "as" , ( string | identifier ) , ";" ;
 mark_as_done    = "Mark" , identifier , ( "as done" | "as not done" ) , ";" ;
 review_all_tasks = "Review all tasks" , ";" ;
-show_me         = "Show me" , ( string | identifier ) , ";" ;
+show_me         = "Show me" , value_list , ";" ;
 save_tasks      = "Save tasks to" , string , ";" ;
 load_tasks      = "Load tasks from" , string , ";" ;
+
+function_definition = "Define function" , identifier , "(" , [ parameter_list ] , ")" , block ;
+run_function    = "Run" , identifier , "(" , [ argument_list ] , ")" , ";" ;
+
 conditional     = "If there's time left before" , ( string | identifier ) , block ,
-                  [ "Otherwise focus on" , ( string | identifier ) ] ;
-block           = "{" , { statement } , "}" ;
+                  [ "Otherwise focus on" , ( string | identifier ) , ";" ] ;
+
 loop            = "Repeat until complete" , block
                 | "Do it again" , number , "times" , block ;
-function_definition = "Define function" , identifier , "(" , [ parameter_list ] , ")" , block ;
+
 parameter_list  = identifier , { "," , identifier } ;
-run_function    = "Run" , identifier , "(" , [ argument_list ] , ")" , ";" ;
 argument_list   = ( string | identifier ) , { "," , ( string | identifier ) } ;
+value_list      = ( string | identifier ) , { " " , ( string | identifier ) } ;
+
+block           = "{" , { statement } , "}" ;
 ```
 
 ---
