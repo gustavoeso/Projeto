@@ -57,7 +57,7 @@ block           = "{" , { statement } , "}" ;
 
 ## **Diagrama Sintático**
 
-![Diagrama Sintático](imgs/DS_organization_lang.png)
+![Diagrama Sintático](imgs/DS_organ_lang.png.png)
 
 ---
 
