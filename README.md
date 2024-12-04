@@ -1,5 +1,7 @@
 # **ProductivityLang**
 
+## Gustavo Eliziario Stevenson de Oliveira e Luca Mizrahi
+
 ### **Introdução**
 **ProductivityLang** é uma linguagem de programação criada para auxiliar na organização e gestão de tarefas. A linguagem permite criar, revisar e manipular tarefas, prazos e atributos associados a elas de forma intuitiva.
 
